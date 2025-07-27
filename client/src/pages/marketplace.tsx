@@ -11,6 +11,7 @@ import ProductCard from "@/components/product-card";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Search, Filter } from "lucide-react";
+import type { Category, Product } from "@shared/schema";
 
 export default function Marketplace() {
   const { toast } = useToast();
@@ -19,11 +20,11 @@ export default function Marketplace() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [priceRange, setPriceRange] = useState<{ min: string; max: string }>({ min: "", max: "" });
 
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
   });
 
-  const { data: products = [], isLoading } = useQuery({
+  const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products", searchTerm, selectedCategory, priceRange.min, priceRange.max],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -114,7 +115,7 @@ export default function Marketplace() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="">All Categories</SelectItem>
-                        {categories.map((category: any) => (
+                        {categories.map((category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>
@@ -159,7 +160,7 @@ export default function Marketplace() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {products.map((product: any) => (
+                    {products.map((product) => (
                       <ProductCard
                         key={product.id}
                         product={{

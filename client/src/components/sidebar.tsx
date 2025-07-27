@@ -53,9 +53,9 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
       <nav className="space-y-1">
         {items.map((item) => (
           <Link key={item.href} href={item.href}>
-            <a
+            <div
               className={cn(
-                "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer",
                 location === item.href
                   ? "bg-primary/10 text-primary"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -71,7 +71,7 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
                 )} 
               />
               {item.label}
-            </a>
+            </div>
           </Link>
         ))}
       </nav>

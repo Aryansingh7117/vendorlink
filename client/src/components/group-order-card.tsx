@@ -16,7 +16,9 @@ interface GroupOrderCardProps {
 }
 
 export default function GroupOrderCard({ groupOrder, onJoin }: GroupOrderCardProps) {
-  const progress = (groupOrder.currentParticipants / groupOrder.maxParticipants) * 100;
+  const currentParticipants = groupOrder.currentParticipants || 0;
+  const maxParticipants = groupOrder.maxParticipants || 10;
+  const progress = (currentParticipants / maxParticipants) * 100;
   const daysLeft = Math.ceil((new Date(groupOrder.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
   
   const getProgressColor = () => {
@@ -40,7 +42,7 @@ export default function GroupOrderCard({ groupOrder, onJoin }: GroupOrderCardPro
           </CardTitle>
           <Badge variant={getBadgeVariant()}>
             <Users className="w-3 h-3 mr-1" />
-            {groupOrder.currentParticipants}/{groupOrder.maxParticipants} vendors
+            {currentParticipants}/{maxParticipants} vendors
           </Badge>
         </div>
       </CardHeader>
@@ -81,12 +83,12 @@ export default function GroupOrderCard({ groupOrder, onJoin }: GroupOrderCardPro
 
         <Button
           onClick={() => onJoin?.(groupOrder.id)}
-          disabled={groupOrder.currentParticipants >= groupOrder.maxParticipants || daysLeft <= 0}
+          disabled={currentParticipants >= maxParticipants || daysLeft <= 0}
           className="w-full"
           variant={progress >= 70 ? "default" : "outline"}
           data-testid={`button-join-group-order-${groupOrder.id}`}
         >
-          {groupOrder.currentParticipants >= groupOrder.maxParticipants 
+          {currentParticipants >= maxParticipants 
             ? "Group Full" 
             : daysLeft <= 0 
             ? "Expired" 

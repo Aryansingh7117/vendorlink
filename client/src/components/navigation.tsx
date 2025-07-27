@@ -5,9 +5,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Handshake, Bell, ChevronDown } from "lucide-react";
 import { Link } from "wouter";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import type { User } from "@shared/schema";
 
 export default function Navigation() {
-  const { user } = useAuth();
+  const { user } = useAuth() as { user: User | null };
+  const { toast } = useToast();
+  const [notificationCount, setNotificationCount] = useState(3);
+
+  const handleNotificationClick = () => {
+    toast({
+      title: "Notifications",
+      description: "You have new price alerts and order updates to review.",
+    });
+    setNotificationCount(0);
+  };
 
   return (
     <nav className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
@@ -47,15 +60,18 @@ export default function Navigation() {
               variant="ghost" 
               size="sm" 
               className="relative"
+              onClick={handleNotificationClick}
               data-testid="button-notifications"
             >
               <Bell className="h-5 w-5" />
-              <Badge 
-                variant="destructive" 
-                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-              >
-                3
-              </Badge>
+              {notificationCount > 0 && (
+                <Badge 
+                  variant="destructive" 
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {notificationCount}
+                </Badge>
+              )}
             </Button>
             {user && (
               <DropdownMenu>

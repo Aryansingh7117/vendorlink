@@ -11,6 +11,11 @@ import SupplierDashboard from "@/pages/supplier-dashboard";
 import Marketplace from "@/pages/marketplace";
 import GroupOrders from "@/pages/group-orders";
 import Orders from "@/pages/orders";
+import SavedSuppliers from "@/pages/saved-suppliers";
+import PriceTracking from "@/pages/price-tracking";
+import MyProducts from "@/pages/my-products";
+import CreditScore from "@/pages/credit-score";
+import Settings from "@/pages/settings";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -27,6 +32,11 @@ function Router() {
           <Route path="/marketplace" component={Marketplace} />
           <Route path="/group-orders" component={GroupOrders} />
           <Route path="/orders" component={Orders} />
+          <Route path="/saved-suppliers" component={SavedSuppliers} />
+          <Route path="/price-tracking" component={PriceTracking} />
+          <Route path="/my-products" component={MyProducts} />
+          <Route path="/credit-score" component={CreditScore} />
+          <Route path="/settings" component={Settings} />
         </>
       )}
       <Route component={NotFound} />

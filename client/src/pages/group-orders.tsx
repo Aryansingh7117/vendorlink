@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Plus, Users, Clock, TrendingUp } from "lucide-react";
+import type { GroupOrder, Product, User } from "@shared/schema";
 
 const createGroupOrderSchema = z.object({
   productId: z.string().min(1, "Product is required"),
@@ -36,11 +37,11 @@ const joinGroupOrderSchema = z.object({
 
 export default function GroupOrders() {
   const { toast } = useToast();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth() as { isAuthenticated: boolean; isLoading: boolean; user: User | null };
   const queryClient = useQueryClient();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showJoinDialog, setShowJoinDialog] = useState(false);
-  const [selectedGroupOrder, setSelectedGroupOrder] = useState<any>(null);
+  const [selectedGroupOrder, setSelectedGroupOrder] = useState<GroupOrder | null>(null);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -57,12 +58,12 @@ export default function GroupOrders() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  const { data: groupOrders = [], isLoading: groupOrdersLoading } = useQuery({
+  const { data: groupOrders = [], isLoading: groupOrdersLoading } = useQuery<GroupOrder[]>({
     queryKey: ["/api/group-orders"],
     enabled: isAuthenticated,
   });
 
-  const { data: products = [] } = useQuery({
+  const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
     enabled: isAuthenticated,
   });
@@ -155,8 +156,8 @@ export default function GroupOrders() {
   });
 
   const handleJoinGroupOrder = (groupOrderId: string) => {
-    const groupOrder = groupOrders.find((go: any) => go.id === groupOrderId);
-    setSelectedGroupOrder(groupOrder);
+    const groupOrder = groupOrders.find((go) => go.id === groupOrderId);
+    setSelectedGroupOrder(groupOrder || null);
     setShowJoinDialog(true);
   };
 
@@ -177,8 +178,8 @@ export default function GroupOrders() {
     return <div>Loading...</div>;
   }
 
-  const activeGroupOrders = groupOrders.filter((go: any) => go.status === 'active');
-  const myGroupOrders = groupOrders.filter((go: any) => go.organizerId === isAuthenticated);
+  const activeGroupOrders = groupOrders.filter((go) => go.status === 'active');
+  const myGroupOrders = groupOrders.filter((go) => go.organizerId === user?.id);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -225,7 +226,7 @@ export default function GroupOrders() {
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    {products.map((product: any) => (
+                                    {products.map((product) => (
                                       <SelectItem key={product.id} value={product.id}>
                                         {product.name} - ₹{product.pricePerUnit}/{product.unit}
                                       </SelectItem>
@@ -534,7 +535,7 @@ export default function GroupOrders() {
 
                         <div className="bg-success-50 p-3 rounded-lg">
                           <p className="text-sm text-success-800">
-                            You'll save: ₹{((selectedGroupOrder.regularPricePerUnit - selectedGroupOrder.groupPricePerUnit) * (joinForm.watch('quantity') || 1)).toFixed(2)}
+                            You'll save: ₹{((Number(selectedGroupOrder.regularPricePerUnit) - Number(selectedGroupOrder.groupPricePerUnit)) * (joinForm.watch('quantity') || 1)).toFixed(2)}
                           </p>
                         </div>
 
