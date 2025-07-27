@@ -45,6 +45,15 @@ export default function Landing() {
               size="lg" 
               variant="outline"
               data-testid="button-learn-more"
+              onClick={() => {
+                const featuresSection = document.getElementById('features-section');
+                if (featuresSection) {
+                  featuresSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  // Fallback: scroll to features section manually
+                  window.scrollTo({ top: 600, behavior: 'smooth' });
+                }
+              }}
             >
               Learn More
             </Button>
@@ -53,7 +62,7 @@ export default function Landing() {
       </div>
 
       {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div id="features-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-slate-900 mb-4">
             Everything you need for B2B trading
