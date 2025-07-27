@@ -1,6 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { setupDevelopmentEnvironment, validateDeployment } from "./deploymentConfig";
+
+// Setup development environment defaults
+setupDevelopmentEnvironment();
 
 const app = express();
 app.use(express.json());
@@ -37,6 +41,15 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Validate deployment configuration
+  if (process.env.NODE_ENV === "production") {
+    const isValid = await validateDeployment();
+    if (!isValid) {
+      console.error("❌ Deployment validation failed. Application cannot start.");
+      process.exit(1);
+    }
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
