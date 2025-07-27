@@ -142,14 +142,30 @@ export async function setupAuth(app: Express) {
       verified: passport.AuthenticateCallback
     ) => {
       try {
-        console.log("Verifying authentication tokens...");
+        console.log("=== AUTHENTICATION VERIFICATION START ===");
+        console.log("Tokens received:", {
+          hasAccessToken: !!tokens.access_token,
+          hasRefreshToken: !!tokens.refresh_token,
+          tokenType: tokens.token_type
+        });
+        
         const claims = tokens.claims();
+        console.log("Claims extraction result:", {
+          hasClaims: !!claims,
+          claimsType: typeof claims
+        });
         
         if (!claims) {
-          throw new Error("No claims received from authentication");
+          console.error("No claims received from authentication tokens");
+          return verified(new Error("No claims received"));
         }
         
-        console.log("User claims received:", { sub: claims.sub, email: claims.email });
+        console.log("User claims received:", { 
+          sub: claims.sub, 
+          email: claims.email,
+          exp: claims.exp,
+          iat: claims.iat
+        });
         
         const user = {
           id: claims.sub,
@@ -159,12 +175,22 @@ export async function setupAuth(app: Express) {
           expires_at: claims.exp
         };
         
-        await upsertUser(claims);
-        console.log("User upserted successfully");
+        console.log("User object created:", {
+          hasId: !!user.id,
+          hasClaims: !!user.claims,
+          hasAccessToken: !!user.access_token,
+          expiresAt: user.expires_at
+        });
         
+        await upsertUser(claims);
+        console.log("User upserted to database successfully");
+        
+        console.log("=== AUTHENTICATION VERIFICATION SUCCESS ===");
         verified(null, user);
       } catch (error) {
-        console.error("Authentication verification failed:", error);
+        console.error("=== AUTHENTICATION VERIFICATION FAILED ===");
+        console.error("Verification error:", error);
+        console.error("Error stack:", error instanceof Error ? error.stack : 'No stack trace');
         verified(error);
       }
     };
@@ -237,6 +263,13 @@ export async function setupAuth(app: Express) {
       }
       
       console.log(`Using callback strategy: ${matchingStrategy}`);
+      console.log("Callback request details:", {
+        query: req.query,
+        hostname: req.hostname,
+        method: req.method,
+        url: req.url
+      });
+      
       passport.authenticate(matchingStrategy, (err: any, user: any, info: any) => {
         if (err) {
           console.error("Authentication error:", err);
@@ -244,7 +277,15 @@ export async function setupAuth(app: Express) {
         }
         
         if (!user) {
-          console.error("Authentication failed - no user:", info);
+          console.error("Authentication failed - no user returned from strategy");
+          console.error("Error details:", err);
+          console.error("Info details:", info);
+          console.error("Request query:", req.query);
+          console.error("Request headers:", {
+            host: req.headers.host,
+            'user-agent': req.headers['user-agent'],
+            authorization: req.headers.authorization
+          });
           return res.redirect("/api/login?error=no_user");
         }
         
