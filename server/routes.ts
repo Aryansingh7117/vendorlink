@@ -15,6 +15,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     credits: 2500
   };
 
+  // Ensure demo user exists in database for foreign key constraints
+  try {
+    const existingUser = await storage.getUser("demo-user");
+    if (!existingUser) {
+      await storage.upsertUser({
+        id: "demo-user",
+        email: "demo@vendorlink.com",
+        firstName: "Demo",
+        lastName: "User",
+        role: "both"
+      });
+    }
+  } catch (error) {
+    console.log("Demo user setup:", error);
+  }
+
   // Mock auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     res.json(mockUser);

@@ -183,11 +183,6 @@ export default function Navigation() {
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <a href="/api/logout" className="w-full" data-testid="link-logout">
-                      Logout
-                    </a>
-                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
