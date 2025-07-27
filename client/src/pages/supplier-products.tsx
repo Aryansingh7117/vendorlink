@@ -129,7 +129,7 @@ export default function SupplierProducts() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
       <Navigation />
       <div className="flex">
         <Sidebar userRole="supplier" />
@@ -138,8 +138,8 @@ export default function SupplierProducts() {
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900">My Products</h1>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white">My Products</h1>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-gray-300">
                     Manage your product catalog and inventory
                   </p>
                 </div>
@@ -150,9 +150,9 @@ export default function SupplierProducts() {
                       Add Product
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
+                  <DialogContent className="max-w-2xl dark:bg-gray-800 dark:border-gray-700">
                     <DialogHeader>
-                      <DialogTitle>Add New Product</DialogTitle>
+                      <DialogTitle className="dark:text-white">Add New Product</DialogTitle>
                     </DialogHeader>
                     <Form {...addForm}>
                       <form onSubmit={addForm.handleSubmit(onAddSubmit)} className="space-y-4">
@@ -292,10 +292,10 @@ export default function SupplierProducts() {
 
             <div className="grid gap-6">
               {products.map((product) => (
-                <Card key={product.id}>
+                <Card key={product.id} className="dark:bg-gray-800 dark:border-gray-700">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg flex items-center">
+                      <CardTitle className="text-lg flex items-center dark:text-white">
                         <Package className="h-5 w-5 mr-2" />
                         {product.name}
                       </CardTitle>
@@ -303,31 +303,31 @@ export default function SupplierProducts() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-slate-600 mb-4">{product.description}</p>
+                    <p className="text-sm text-slate-600 dark:text-gray-300 mb-4">{product.description}</p>
                     
                     <div className="grid md:grid-cols-4 gap-6 mb-6">
                       <div>
-                        <h4 className="text-sm font-medium text-slate-900 mb-1">Price</h4>
-                        <p className="text-xl font-bold">₹{product.price}</p>
-                        <p className="text-sm text-slate-600">per {product.unit}</p>
+                        <h4 className="text-sm font-medium text-slate-900 dark:text-gray-200 mb-1">Price</h4>
+                        <p className="text-xl font-bold dark:text-white">₹{product.price}</p>
+                        <p className="text-sm text-slate-600 dark:text-gray-300">per {product.unit}</p>
                       </div>
                       
                       <div>
-                        <h4 className="text-sm font-medium text-slate-900 mb-1">Stock</h4>
-                        <p className="text-xl font-bold">{product.stock}</p>
-                        <p className="text-sm text-slate-600">{product.unit}s available</p>
+                        <h4 className="text-sm font-medium text-slate-900 dark:text-gray-200 mb-1">Stock</h4>
+                        <p className="text-xl font-bold dark:text-white">{product.stock}</p>
+                        <p className="text-sm text-slate-600 dark:text-gray-300">{product.unit}s available</p>
                       </div>
 
                       <div>
-                        <h4 className="text-sm font-medium text-slate-900 mb-1">Orders</h4>
-                        <p className="text-xl font-bold">{product.orders}</p>
-                        <p className="text-sm text-slate-600">this month</p>
+                        <h4 className="text-sm font-medium text-slate-900 dark:text-gray-200 mb-1">Orders</h4>
+                        <p className="text-xl font-bold dark:text-white">{product.orders}</p>
+                        <p className="text-sm text-slate-600 dark:text-gray-300">this month</p>
                       </div>
 
                       <div>
-                        <h4 className="text-sm font-medium text-slate-900 mb-1">Min Order</h4>
-                        <p className="text-xl font-bold">{product.minOrder}</p>
-                        <p className="text-sm text-slate-600">{product.unit}s minimum</p>
+                        <h4 className="text-sm font-medium text-slate-900 dark:text-gray-200 mb-1">Min Order</h4>
+                        <p className="text-xl font-bold dark:text-white">{product.minOrder}</p>
+                        <p className="text-sm text-slate-600 dark:text-gray-300">{product.unit}s minimum</p>
                       </div>
                     </div>
 

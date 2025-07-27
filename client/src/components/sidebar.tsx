@@ -46,7 +46,6 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
 
   const accountNavItems = [
     { icon: CreditCard, label: "Credit Score", href: "/credit-score" },
-    { icon: Settings, label: "Settings", href: "/settings" },
   ];
 
   const supportNavItems = [
@@ -68,8 +67,8 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
               className={cn(
                 "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer",
                 location === item.href
-                  ? "bg-primary/10 text-primary"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  ? "bg-primary/10 text-primary dark:bg-primary/20"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
               )}
               data-testid={`sidebar-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
             >
@@ -78,7 +77,7 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
                   "mr-3 h-5 w-5 transition-colors",
                   location === item.href
                     ? "text-primary"
-                    : "text-slate-400 group-hover:text-slate-600"
+                    : "text-slate-400 group-hover:text-slate-600 dark:text-gray-400 dark:group-hover:text-gray-300"
                 )} 
               />
               {item.label}

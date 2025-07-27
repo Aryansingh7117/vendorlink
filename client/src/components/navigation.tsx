@@ -182,7 +182,7 @@ export default function Navigation() {
                       </Link>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
+
                 </DropdownMenuContent>
               </DropdownMenu>
             )}

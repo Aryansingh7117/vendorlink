@@ -26,6 +26,8 @@ import CustomerSupport from "@/pages/customer-support";
 import Feedback from "@/pages/feedback";
 import DeliveryTracking from "@/pages/delivery-tracking";
 import ProductReviews from "@/pages/product-reviews";
+import PendingOrders from "@/pages/pending-orders";
+import OrderHistory from "@/pages/order-history";
 
 // Loading component with smooth animations
 function LoadingScreen() {
@@ -77,6 +79,8 @@ function Router() {
         <Route path="/feedback" component={Feedback} />
         <Route path="/delivery-tracking" component={DeliveryTracking} />
         <Route path="/product-reviews" component={ProductReviews} />
+        <Route path="/pending-orders" component={PendingOrders} />
+        <Route path="/order-history" component={OrderHistory} />
         <Route component={NotFound} />
       </Switch>
     </div>
