@@ -31,7 +31,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Ensure mock category exists
     try {
       await storage.createCategory({
-        id: "mock-category",
         name: "Demo Products",
         description: "Demo category for marketplace products"
       });
