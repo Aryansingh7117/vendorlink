@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Star, Package, ShoppingBag, MapPin, Phone, Mail, SortAsc } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { addToCart } from "@/utils/cart";
 import { useRoute } from "wouter";
 import { useLocation } from "wouter";
 
@@ -100,45 +101,8 @@ export default function SupplierCatalog() {
     });
 
   const handleAddToCart = (product: any) => {
-    console.log('Supplier Catalog: Adding to cart:', product); // Debug log
-    
-    const existingCart = JSON.parse(localStorage.getItem('vendorlink_cart') || '[]');
-    const cartItem = {
-      id: product.id,
-      name: product.name,
-      supplier: supplier.businessName,
-      price: product.price,
-      unit: product.unit,
-      quantity: product.minOrder,
-      minOrder: product.minOrder,
-      available: product.available
-    };
-    
-    const existingItemIndex = existingCart.findIndex((item: any) => item.id === product.id);
-    if (existingItemIndex >= 0) {
-      existingCart[existingItemIndex].quantity += cartItem.quantity;
-    } else {
-      existingCart.push(cartItem);
-    }
-    
-    // Multiple saves for deployment robustness
-    localStorage.setItem('vendorlink_cart', JSON.stringify(existingCart));
-    setTimeout(() => {
-      localStorage.setItem('vendorlink_cart', JSON.stringify(existingCart));
-    }, 50);
-    
-    console.log('Supplier Catalog: Cart after adding:', existingCart); // Debug log
-    
-    // Multiple event triggers for deployment
-    window.dispatchEvent(new Event('cartUpdated'));
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'vendorlink_cart',
-      newValue: JSON.stringify(existingCart),
-      url: window.location.href
-    }));
-    setTimeout(() => {
-      window.dispatchEvent(new Event('cartUpdated'));
-    }, 100);
+    // Use centralized cart utility
+    addToCart(product, supplier.businessName);
     
     toast({
       title: "Added to Cart",

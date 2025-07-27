@@ -9,6 +9,7 @@ import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@shared/schema";
+import { getCartItemCount } from "@/utils/cart";
 
 export default function Navigation() {
   const { user } = useAuth() as { user: User | null };
@@ -19,23 +20,11 @@ export default function Navigation() {
   // Update cart count and notifications from localStorage (enhanced for deployment)
   useEffect(() => {
     const updateCounts = () => {
-      console.log('Navigation: Updating cart count'); // Debug log
+      // console.log('Navigation: Updating cart count'); // Debug log
       
-      // Update cart count
-      const savedCart = localStorage.getItem('vendorlink_cart');
-      if (savedCart) {
-        try {
-          const parsedCart = JSON.parse(savedCart);
-          console.log('Navigation: Cart items found:', parsedCart.length); // Debug log
-          setCartCount(parsedCart.length);
-        } catch (error) {
-          console.log('Navigation: Error parsing cart:', error); // Debug log
-          setCartCount(0);
-        }
-      } else {
-        console.log('Navigation: No cart found'); // Debug log
-        setCartCount(0);
-      }
+      // Update cart count using centralized utility
+      const count = getCartItemCount();
+      setCartCount(count);
 
       // Update notification count based on alerts
       const savedAlerts = localStorage.getItem('vendorlink_price_alerts');
@@ -57,8 +46,8 @@ export default function Navigation() {
     window.addEventListener('alertsUpdated', updateCounts);
     window.addEventListener('focus', updateCounts);
     
-    // Check periodically for deployed version
-    const interval = setInterval(updateCounts, 1000);
+    // Check periodically for deployed version (less frequent)
+    const interval = setInterval(updateCounts, 5000);
 
     return () => {
       window.removeEventListener('storage', updateCounts);
