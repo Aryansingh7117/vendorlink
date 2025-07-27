@@ -127,7 +127,7 @@ export default function Marketplace() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
       <Navigation />
       <div className="flex">
         <Sidebar />
@@ -135,8 +135,8 @@ export default function Marketplace() {
           <div className="p-6 lg:p-8">
             <Card>
               <CardHeader>
-                <CardTitle>Product Marketplace</CardTitle>
-                <p className="text-sm text-slate-600 mt-1">
+                <CardTitle className="dark:text-white">Product Marketplace</CardTitle>
+                <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">
                   Find and compare suppliers for your business needs
                 </p>
               </CardHeader>

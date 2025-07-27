@@ -63,7 +63,7 @@ export default function VendorDashboard() {
   const activeGroupOrders = groupOrders.slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
       <Navigation />
       <div className="flex">
         <Sidebar userRole="vendor" />
@@ -73,10 +73,10 @@ export default function VendorDashboard() {
             <div className="mb-8">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900" data-testid="text-dashboard-title">
+                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white" data-testid="text-dashboard-title">
                     Vendor Dashboard
                   </h1>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <p className="mt-1 text-sm text-slate-600 dark:text-gray-300">
                     Manage your procurement and supplier relationships
                   </p>
                 </div>
@@ -105,8 +105,8 @@ export default function VendorDashboard() {
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
-                        <dt className="text-sm font-medium text-slate-500 truncate">Active Orders</dt>
-                        <dd className="text-lg font-medium text-slate-900" data-testid="text-active-orders">
+                        <dt className="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">Active Orders</dt>
+                        <dd className="text-lg font-medium text-slate-900 dark:text-white" data-testid="text-active-orders">
                           {statsLoading ? "..." : stats?.activeOrders || 0}
                         </dd>
                       </dl>
@@ -125,8 +125,8 @@ export default function VendorDashboard() {
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
-                        <dt className="text-sm font-medium text-slate-500 truncate">Monthly Savings</dt>
-                        <dd className="text-lg font-medium text-slate-900" data-testid="text-monthly-savings">
+                        <dt className="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">Monthly Savings</dt>
+                        <dd className="text-lg font-medium text-slate-900 dark:text-white" data-testid="text-monthly-savings">
                           {statsLoading ? "..." : `₹${stats?.monthlySavings?.toLocaleString() || 0}`}
                         </dd>
                       </dl>

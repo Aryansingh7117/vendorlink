@@ -56,13 +56,13 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+    <nav className="bg-white dark:bg-gray-900 shadow-sm border-b border-slate-200 dark:border-gray-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex-shrink-0 flex items-center" data-testid="link-home">
               <Handshake className="text-primary text-2xl mr-2" />
-              <span className="text-xl font-bold text-slate-900">VendorLink</span>
+              <span className="text-xl font-bold text-slate-900 dark:text-white">VendorLink</span>
             </Link>
             <div className="hidden md:flex items-center space-x-6">
               <Link 

@@ -48,7 +48,7 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
 
   const NavSection = ({ title, items }: { title: string; items: typeof vendorNavItems }) => (
     <div>
-      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+      <h3 className="text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-3">
         {title}
       </h3>
       <nav className="space-y-1">
@@ -80,7 +80,7 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
   );
 
   return (
-    <aside className="w-64 bg-white shadow-sm border-r border-slate-200 hidden lg:block">
+    <aside className="w-64 bg-white dark:bg-gray-900 shadow-sm border-r border-slate-200 dark:border-gray-700 hidden lg:block">
       <div className="p-6">
         <div className="space-y-6">
           {userRole === 'supplier' ? (

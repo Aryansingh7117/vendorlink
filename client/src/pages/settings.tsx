@@ -16,15 +16,15 @@ export default function Settings() {
   const { toast } = useToast();
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
       <Navigation />
       <div className="flex">
         <Sidebar />
         <main className="flex-1 overflow-hidden">
           <div className="p-6 lg:p-8">
             <div className="mb-8">
-              <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
-              <p className="mt-1 text-sm text-slate-600">
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Settings</h1>
+              <p className="mt-1 text-sm text-slate-600 dark:text-gray-300">
                 Manage your account preferences and business settings
               </p>
             </div>
