@@ -180,11 +180,11 @@ export default function Cart() {
             </div>
 
             {cartItems.length === 0 ? (
-              <Card>
+              <Card className="dark:bg-gray-800 dark:border-gray-700">
                 <CardContent className="text-center py-16">
-                  <ShoppingBag className="h-16 w-16 mx-auto text-slate-300 mb-4" />
-                  <h3 className="text-lg font-medium text-slate-900 mb-2">Your cart is empty</h3>
-                  <p className="text-slate-600 mb-6">Add some products to get started</p>
+                  <ShoppingBag className="h-16 w-16 mx-auto text-slate-300 dark:text-gray-500 mb-4" />
+                  <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Your cart is empty</h3>
+                  <p className="text-slate-600 dark:text-gray-300 mb-6">Add some products to get started</p>
                   <Button onClick={() => window.location.href = "/marketplace"}>
                     Browse Products
                   </Button>
@@ -194,21 +194,21 @@ export default function Cart() {
               <div className="grid lg:grid-cols-3 gap-8">
                 {/* Cart Items */}
                 <div className="lg:col-span-2">
-                  <Card>
+                  <Card className="dark:bg-gray-800 dark:border-gray-700">
                     <CardHeader>
-                      <CardTitle>Items in Cart ({cartItems.length})</CardTitle>
+                      <CardTitle className="dark:text-white">Items in Cart ({cartItems.length})</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {cartItems.map((item) => (
-                        <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-                          <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center">
-                            <Package className="h-8 w-8 text-slate-400" />
+                        <div key={item.id} className="flex items-center space-x-4 p-4 border dark:border-gray-700 rounded-lg">
+                          <div className="w-16 h-16 bg-slate-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                            <Package className="h-8 w-8 text-slate-400 dark:text-gray-400" />
                           </div>
                           
                           <div className="flex-1">
-                            <h4 className="font-medium text-slate-900">{item.name}</h4>
-                            <p className="text-sm text-slate-600">by {item.supplier}</p>
-                            <p className="text-sm text-slate-500">₹{item.price}/{item.unit}</p>
+                            <h4 className="font-medium text-slate-900 dark:text-white">{item.name}</h4>
+                            <p className="text-sm text-slate-600 dark:text-gray-300">by {item.supplier}</p>
+                            <p className="text-sm text-slate-500 dark:text-gray-400">₹{item.price}/{item.unit}</p>
                             <Badge variant="outline" className="text-xs mt-1">
                               Min order: {item.minOrder} {item.unit}s
                             </Badge>
@@ -242,12 +242,12 @@ export default function Cart() {
                           </div>
 
                           <div className="text-right">
-                            <p className="font-medium">₹{(item.price * item.quantity).toFixed(2)}</p>
+                            <p className="font-medium text-slate-900 dark:text-white">₹{(item.price * item.quantity).toFixed(2)}</p>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => removeItem(item.id)}
-                              className="text-red-600 hover:text-red-800"
+                              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -260,24 +260,24 @@ export default function Cart() {
 
                 {/* Order Summary */}
                 <div>
-                  <Card>
+                  <Card className="dark:bg-gray-800 dark:border-gray-700">
                     <CardHeader>
-                      <CardTitle>Order Summary</CardTitle>
+                      <CardTitle className="dark:text-white">Order Summary</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="flex justify-between">
+                      <div className="flex justify-between text-slate-700 dark:text-gray-300">
                         <span>Subtotal</span>
                         <span>₹{subtotal.toFixed(2)}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between text-slate-700 dark:text-gray-300">
                         <span>Delivery Fee</span>
                         <span>{deliveryFee === 0 ? "FREE" : `₹${deliveryFee}`}</span>
                       </div>
                       {deliveryFee === 0 && (
-                        <p className="text-xs text-green-600">Free delivery on orders above ₹2000</p>
+                        <p className="text-xs text-green-600 dark:text-green-400">Free delivery on orders above ₹2000</p>
                       )}
-                      <Separator />
-                      <div className="flex justify-between font-bold text-lg">
+                      <Separator className="dark:bg-gray-700" />
+                      <div className="flex justify-between font-bold text-lg text-slate-900 dark:text-white">
                         <span>Total</span>
                         <span>₹{total.toFixed(2)}</span>
                       </div>
@@ -303,11 +303,11 @@ export default function Cart() {
                   </Card>
 
                   {/* Delivery Info */}
-                  <Card className="mt-6">
+                  <Card className="mt-6 dark:bg-gray-800 dark:border-gray-700">
                     <CardHeader>
-                      <CardTitle className="text-base">Delivery Information</CardTitle>
+                      <CardTitle className="text-base dark:text-white">Delivery Information</CardTitle>
                     </CardHeader>
-                    <CardContent className="text-sm text-slate-600 space-y-2">
+                    <CardContent className="text-sm text-slate-600 dark:text-gray-300 space-y-2">
                       <p>📦 Standard delivery in 2-3 business days</p>
                       <p>🚚 Express delivery available for urgent orders</p>
                       <p>📋 All orders are quality checked before dispatch</p>
