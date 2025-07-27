@@ -60,7 +60,10 @@ function Router() {
     <div className="animate-fade-in">
       <Switch>
         {!isAuthenticated ? (
-          <Route path="/" component={Landing} />
+          <>
+            <Route path="/" component={Landing} />
+            <Route path="/cart" component={Cart} />
+          </>
         ) : (
           <>
             <Route path="/" component={VendorDashboard} />

@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Minus, Plus, Trash2, ShoppingBag, Package, Truck } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Package, Truck, LogIn } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface CartItem {
   id: string;
@@ -23,6 +24,7 @@ interface CartItem {
 
 export default function Cart() {
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // Load cart from localStorage on component mount
@@ -161,6 +163,35 @@ export default function Cart() {
       });
     }
   };
+
+  // Show login prompt for non-authenticated users
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
+        <Navigation />
+        <div className="flex">
+          <Sidebar />
+          <main className="flex-1 overflow-hidden">
+            <div className="p-6 lg:p-8">
+              <div className="max-w-md mx-auto mt-16">
+                <Card className="dark:bg-gray-800 dark:border-gray-700">
+                  <CardContent className="text-center py-16">
+                    <LogIn className="h-16 w-16 mx-auto text-slate-300 dark:text-gray-500 mb-4" />
+                    <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Please Log In</h3>
+                    <p className="text-slate-600 dark:text-gray-300 mb-6">You need to be logged in to access your shopping cart</p>
+                    <Button onClick={() => window.location.href = "/"}>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Go to Login
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
