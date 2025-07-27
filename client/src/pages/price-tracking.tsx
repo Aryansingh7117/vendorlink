@@ -63,7 +63,7 @@ export default function PriceTracking() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
       <Navigation />
       <div className="flex">
         <Sidebar />
@@ -72,8 +72,8 @@ export default function PriceTracking() {
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900">Price Tracking</h1>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Price Tracking</h1>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-gray-300">
                     Monitor price changes and get alerts when your target prices are reached
                   </p>
                 </div>
@@ -146,29 +146,29 @@ export default function PriceTracking() {
                   <CardContent>
                     <div className="grid md:grid-cols-3 gap-6">
                       <div>
-                        <h4 className="text-sm font-medium text-slate-900 mb-2">Current Price</h4>
+                        <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-2">Current Price</h4>
                         <div className="flex items-center space-x-2">
                           <span className="text-2xl font-bold">₹{alert.currentPrice}</span>
                           <div className="flex items-center">
                             {getTrendIcon(alert.trend)}
                             <span className={`text-sm ml-1 ${
                               alert.trend === "up" ? "text-red-500" : 
-                              alert.trend === "down" ? "text-green-500" : "text-slate-500"
+                              alert.trend === "down" ? "text-green-500" : "text-slate-500 dark:text-gray-400"
                             }`}>
                               {alert.changePercent > 0 ? "+" : ""}{alert.changePercent}%
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-slate-600 mt-1">from {alert.supplier}</p>
+                        <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">from {alert.supplier}</p>
                       </div>
                       
                       <div>
-                        <h4 className="text-sm font-medium text-slate-900 mb-2">Target Price</h4>
+                        <h4 className="text-sm font-medium text-slate-900 dark:text-white mb-2">Target Price</h4>
                         <div className="flex items-center space-x-2">
                           <span className="text-2xl font-bold text-blue-600">₹{alert.targetPrice}</span>
                           <Target className="h-5 w-5 text-blue-600" />
                         </div>
-                        <p className="text-sm text-slate-600 mt-1">
+                        <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">
                           {alert.currentPrice <= alert.targetPrice ? "Target reached!" : 
                            `₹${alert.currentPrice - alert.targetPrice} above target`}
                         </p>

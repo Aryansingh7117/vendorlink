@@ -106,7 +106,7 @@ export default function SupplierCatalog() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
       <Navigation />
       <div className="flex">
         <Sidebar />
@@ -121,20 +121,20 @@ export default function SupplierCatalog() {
                       <Package className="h-8 w-8 text-blue-600" />
                     </div>
                     <div>
-                      <h1 className="text-2xl font-bold text-slate-900 flex items-center">
+                      <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center">
                         {supplier.businessName}
                         {supplier.verified && (
                           <Badge variant="default" className="ml-2">Verified</Badge>
                         )}
                       </h1>
-                      <p className="text-slate-600 mt-1">{supplier.description}</p>
+                      <p className="text-slate-600 dark:text-gray-300 mt-1">{supplier.description}</p>
                       <div className="flex items-center space-x-4 mt-2">
                         <div className="flex items-center">
                           <Star className="h-4 w-4 text-yellow-400 fill-current" />
                           <span className="ml-1 text-sm font-medium">{supplier.rating}</span>
-                          <span className="text-sm text-slate-600 ml-1">({supplier.reviewCount} reviews)</span>
+                          <span className="text-sm text-slate-600 dark:text-gray-300 ml-1">({supplier.reviewCount} reviews)</span>
                         </div>
-                        <div className="flex items-center text-sm text-slate-600">
+                        <div className="flex items-center text-sm text-slate-600 dark:text-gray-300">
                           <MapPin className="h-4 w-4 mr-1" />
                           {supplier.location}
                         </div>
@@ -142,11 +142,11 @@ export default function SupplierCatalog() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="flex items-center text-sm text-slate-600 mb-1">
+                    <div className="flex items-center text-sm text-slate-600 dark:text-gray-300 mb-1">
                       <Phone className="h-4 w-4 mr-1" />
                       {supplier.phone}
                     </div>
-                    <div className="flex items-center text-sm text-slate-600">
+                    <div className="flex items-center text-sm text-slate-600 dark:text-gray-300">
                       <Mail className="h-4 w-4 mr-1" />
                       {supplier.email}
                     </div>
@@ -157,7 +157,7 @@ export default function SupplierCatalog() {
 
             {/* Product Catalog */}
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Product Catalog</h2>
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Product Catalog</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
                   <Card key={product.id} className="overflow-hidden">
@@ -168,24 +168,24 @@ export default function SupplierCatalog() {
                     </div>
                     <CardHeader>
                       <div className="flex items-start justify-between">
-                        <CardTitle className="text-lg">{product.name}</CardTitle>
+                        <CardTitle className="text-lg dark:text-white">{product.name}</CardTitle>
                         <Badge variant="outline">{product.category}</Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-slate-600 mb-3">{product.description}</p>
+                      <p className="text-sm text-slate-600 dark:text-gray-300 mb-3">{product.description}</p>
                       
                       <div className="space-y-2 mb-4">
                         <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">Price:</span>
-                          <span className="font-semibold">₹{product.price}/{product.unit}</span>
+                          <span className="text-slate-600 dark:text-gray-300">Price:</span>
+                          <span className="font-semibold dark:text-white">₹{product.price}/{product.unit}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">Min Order:</span>
-                          <span>{product.minOrder} {product.unit}s</span>
+                          <span className="text-slate-600 dark:text-gray-300">Min Order:</span>
+                          <span className="dark:text-white">{product.minOrder} {product.unit}s</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">Available:</span>
+                          <span className="text-slate-600 dark:text-gray-300">Available:</span>
                           <span className="text-green-600">{product.available} {product.unit}s</span>
                         </div>
                       </div>
