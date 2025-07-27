@@ -143,22 +143,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/orders', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const orderData = insertOrderSchema.parse({
-        ...req.body,
-        vendorId: userId,
-      });
+      const { items, totalAmount, status = "pending" } = req.body;
 
-      // Calculate total amount
-      const product = await storage.getProduct(orderData.productId);
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+      // Handle cart with multiple items - create separate orders for each item
+      if (items && Array.isArray(items)) {
+        const createdOrders = [];
+        
+        for (const item of items) {
+          const orderData = {
+            vendorId: userId,
+            productId: item.productId,
+            productName: item.productName,
+            quantity: item.quantity,
+            pricePerUnit: item.price.toString(),
+            totalAmount: (item.price * item.quantity).toString(),
+            supplierId: item.supplierId || 1,
+            supplierName: item.supplierName || "Default Supplier",
+            status: status,
+            orderDate: new Date().toISOString()
+          };
+
+          const order = await storage.createOrder(orderData);
+          createdOrders.push(order);
+        }
+        
+        res.json({ message: `${createdOrders.length} orders created successfully`, orders: createdOrders });
+      } else {
+        // Handle single product order (existing functionality)
+        const orderData = insertOrderSchema.parse({
+          ...req.body,
+          vendorId: userId,
+        });
+
+        const product = await storage.getProduct(orderData.productId);
+        if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+
+        orderData.pricePerUnit = product.pricePerUnit;
+        orderData.totalAmount = (parseFloat(product.pricePerUnit) * orderData.quantity).toFixed(2);
+
+        const order = await storage.createOrder(orderData);
+        res.json(order);
       }
-
-      orderData.pricePerUnit = product.pricePerUnit;
-      orderData.totalAmount = (parseFloat(product.pricePerUnit) * orderData.quantity).toFixed(2);
-
-      const order = await storage.createOrder(orderData);
-      res.json(order);
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid order data", errors: error.errors });

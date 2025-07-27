@@ -45,15 +45,28 @@ export default function VendorDashboard() {
     enabled: isAuthenticated,
   });
 
-  const { data: groupOrders = [], isLoading: groupOrdersLoading } = useQuery({
+  const { data: groupOrders = [], isLoading: groupOrdersLoading, refetch: refetchGroupOrders } = useQuery({
     queryKey: ["/api/group-orders"],
     enabled: isAuthenticated,
+    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
   });
 
-  const { data: orders = [], isLoading: ordersLoading } = useQuery({
+  const { data: orders = [], isLoading: ordersLoading, refetch: refetchOrders } = useQuery({
     queryKey: ["/api/orders"],
     enabled: isAuthenticated,
+    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
   });
+
+  // Listen for cart updates to refresh dashboard
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      refetchOrders();
+      refetchGroupOrders();
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+  }, [refetchOrders, refetchGroupOrders]);
 
   if (isLoading || !isAuthenticated) {
     return <div>Loading...</div>;
@@ -145,8 +158,8 @@ export default function VendorDashboard() {
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
-                        <dt className="text-sm font-medium text-slate-500 truncate">Credit Score</dt>
-                        <dd className="text-lg font-medium text-slate-900" data-testid="text-credit-score">
+                        <dt className="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">Credit Score</dt>
+                        <dd className="text-lg font-medium text-slate-900 dark:text-white" data-testid="text-credit-score">
                           {statsLoading ? "..." : stats?.creditScore || 600}
                         </dd>
                       </dl>
@@ -165,9 +178,9 @@ export default function VendorDashboard() {
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
-                        <dt className="text-sm font-medium text-slate-500 truncate">Group Orders</dt>
-                        <dd className="text-lg font-medium text-slate-900" data-testid="text-group-orders">
-                          {statsLoading ? "..." : stats?.groupOrders || 0}
+                        <dt className="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">Group Orders</dt>
+                        <dd className="text-lg font-medium text-slate-900 dark:text-white" data-testid="text-group-orders">
+                          {groupOrdersLoading ? "..." : groupOrders?.length || 0}
                         </dd>
                       </dl>
                     </div>
@@ -184,8 +197,8 @@ export default function VendorDashboard() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle>Recent Orders</CardTitle>
-                        <p className="text-sm text-slate-600 mt-1">
+                        <CardTitle className="dark:text-white">Recent Orders</CardTitle>
+                        <p className="text-sm text-slate-600 dark:text-gray-300 mt-1">
                           Track your purchase history and delivery status
                         </p>
                       </div>
@@ -219,16 +232,16 @@ export default function VendorDashboard() {
                 {/* Active Group Orders */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Active Group Orders</CardTitle>
-                    <p className="text-sm text-slate-600">
+                    <CardTitle className="dark:text-white">Active Group Orders</CardTitle>
+                    <p className="text-sm text-slate-600 dark:text-gray-300">
                       Join bulk purchases for better prices
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {groupOrdersLoading ? (
-                      <div className="text-center py-4 text-slate-500">Loading...</div>
+                      <div className="text-center py-4 text-slate-500 dark:text-gray-400">Loading...</div>
                     ) : activeGroupOrders.length === 0 ? (
-                      <div className="text-center py-4 text-slate-500">
+                      <div className="text-center py-4 text-slate-500 dark:text-gray-400">
                         No active group orders
                       </div>
                     ) : (
@@ -251,16 +264,16 @@ export default function VendorDashboard() {
                 {/* Price Alerts */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Price Alerts</CardTitle>
-                    <p className="text-sm text-slate-600">
+                    <CardTitle className="dark:text-white">Price Alerts</CardTitle>
+                    <p className="text-sm text-slate-600 dark:text-gray-300">
                       Track price changes for your key products
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
                       <div>
-                        <h5 className="font-medium text-slate-900">Onion Prices</h5>
-                        <p className="text-sm text-slate-600">₹25/kg current</p>
+                        <h5 className="font-medium text-slate-900 dark:text-white">Onion Prices</h5>
+                        <p className="text-sm text-slate-600 dark:text-gray-300">₹25/kg current</p>
                       </div>
                       <Badge variant="secondary">
                         <TrendingDown className="w-3 h-3 mr-1" />
@@ -269,8 +282,8 @@ export default function VendorDashboard() {
                     </div>
                     <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
                       <div>
-                        <h5 className="font-medium text-slate-900">Rice Prices</h5>
-                        <p className="text-sm text-slate-600">₹85/kg current</p>
+                        <h5 className="font-medium text-slate-900 dark:text-white">Rice Prices</h5>
+                        <p className="text-sm text-slate-600 dark:text-gray-300">₹85/kg current</p>
                       </div>
                       <Badge variant="destructive">
                         <TrendingUp className="w-3 h-3 mr-1" />

@@ -114,17 +114,52 @@ export default function Cart() {
   const deliveryFee = subtotal > 2000 ? 0 : 150;
   const total = subtotal + deliveryFee;
 
-  const handleCheckout = () => {
-    toast({
-      title: "Order Placed Successfully!",
-      description: `Your order for ₹${total.toFixed(2)} has been confirmed. You'll receive updates via email.`,
-    });
-    
-    // Clear cart after successful order
-    setTimeout(() => {
-      setCartItems([]);
-      localStorage.removeItem('vendorlink_cart');
-    }, 2000);
+  const handleCheckout = async () => {
+    try {
+      // Create order via API
+      const orderData = {
+        items: cartItems.map(item => ({
+          productId: item.id,
+          productName: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          supplierId: item.supplierId || 1,
+          supplierName: item.supplierName || "Default Supplier"
+        })),
+        totalAmount: total,
+        status: "pending"
+      };
+
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Order Placed Successfully!",
+          description: `Your order for ₹${total.toFixed(2)} has been confirmed. You'll receive updates via email.`,
+        });
+        
+        // Clear cart after successful order
+        setTimeout(() => {
+          setCartItems([]);
+          localStorage.removeItem('vendorlink_cart');
+          window.dispatchEvent(new Event('cartUpdated'));
+        }, 2000);
+      } else {
+        throw new Error('Failed to place order');
+      }
+    } catch (error) {
+      toast({
+        title: "Order Failed",
+        description: "Failed to place order. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
