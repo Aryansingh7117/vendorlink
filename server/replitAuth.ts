@@ -141,10 +141,32 @@ export async function setupAuth(app: Express) {
       tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
       verified: passport.AuthenticateCallback
     ) => {
-      const user = {};
-      updateUserSession(user, tokens);
-      await upsertUser(tokens.claims());
-      verified(null, user);
+      try {
+        console.log("Verifying authentication tokens...");
+        const claims = tokens.claims();
+        
+        if (!claims) {
+          throw new Error("No claims received from authentication");
+        }
+        
+        console.log("User claims received:", { sub: claims.sub, email: claims.email });
+        
+        const user = {
+          id: claims.sub,
+          claims: claims,
+          access_token: tokens.access_token,
+          refresh_token: tokens.refresh_token,
+          expires_at: claims.exp
+        };
+        
+        await upsertUser(claims);
+        console.log("User upserted successfully");
+        
+        verified(null, user);
+      } catch (error) {
+        console.error("Authentication verification failed:", error);
+        verified(error);
+      }
     };
 
     console.log("Setting up authentication strategies for domains:", process.env.REPLIT_DOMAINS);
@@ -232,7 +254,12 @@ export async function setupAuth(app: Express) {
             return res.redirect("/api/login?error=login_failed");
           }
           
-          console.log("Authentication successful, redirecting to home");
+          console.log("Authentication successful, user logged in:", {
+            userId: user.id,
+            hasSession: !!req.session,
+            sessionId: req.sessionID
+          });
+          
           return res.redirect("/");
         });
       })(req, res, next);
@@ -259,17 +286,28 @@ export async function setupAuth(app: Express) {
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  console.log("Authentication check:", { 
+    isAuthenticated: req.isAuthenticated(), 
+    hasUser: !!user, 
+    hasExpiry: !!(user?.expires_at),
+    hasClaims: !!(user?.claims)
+  });
+
+  if (!req.isAuthenticated() || !user || !user.expires_at) {
+    console.log("Authentication failed: missing session or expiry");
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const now = Math.floor(Date.now() / 1000);
   if (now <= user.expires_at) {
+    console.log("Authentication successful: token still valid");
     return next();
   }
 
+  console.log("Token expired, attempting refresh...");
   const refreshToken = user.refresh_token;
   if (!refreshToken) {
+    console.log("No refresh token available");
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
@@ -277,9 +315,17 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   try {
     const config = await getOidcConfig();
     const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
-    updateUserSession(user, tokenResponse);
+    
+    // Update user session with new tokens
+    user.claims = tokenResponse.claims();
+    user.access_token = tokenResponse.access_token;
+    user.refresh_token = tokenResponse.refresh_token;
+    user.expires_at = user.claims?.exp;
+    
+    console.log("Token refreshed successfully");
     return next();
   } catch (error) {
+    console.error("Token refresh failed:", error);
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
