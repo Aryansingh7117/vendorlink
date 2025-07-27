@@ -24,7 +24,7 @@ export default function Marketplace() {
     queryKey: ["/api/categories"],
   });
 
-  const { data: products = [], isLoading } = useQuery<Product[]>({
+  const { data: apiProducts = [], isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products", searchTerm, selectedCategory, priceRange.min, priceRange.max],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -38,6 +38,23 @@ export default function Marketplace() {
       return response.json();
     },
   });
+
+  // Combine API products with vendor listings from localStorage
+  const vendorListings = JSON.parse(localStorage.getItem('vendor_listings') || '[]');
+  const products = [
+    ...apiProducts,
+    ...vendorListings.map((listing: any) => ({
+      id: listing.id,
+      name: listing.name,
+      description: listing.description,
+      supplier: { businessName: "Various Suppliers" },
+      category: { name: listing.category },
+      pricePerUnit: listing.price,
+      unit: listing.unit,
+      minimumOrderQuantity: listing.minOrder,
+      availableQuantity: listing.stock
+    }))
+  ];
 
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: { productId: string; quantity: number; supplierId: string }) => {

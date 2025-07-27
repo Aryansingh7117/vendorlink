@@ -87,20 +87,23 @@ export default function Cart() {
   }, [cartItems]);
 
   const updateQuantity = (id: string, newQuantity: number) => {
-    setCartItems(items => 
-      items.map(item => {
-        if (item.id === id) {
-          const quantity = Math.max(item.minOrder, Math.min(newQuantity, item.available));
-          return { ...item, quantity };
-        }
-        return item;
-      })
-    );
+    const updatedItems = cartItems.map(item => {
+      if (item.id === id) {
+        const quantity = Math.max(item.minOrder, Math.min(newQuantity, item.available));
+        return { ...item, quantity };
+      }
+      return item;
+    });
+    setCartItems(updatedItems);
+    localStorage.setItem('vendorlink_cart', JSON.stringify(updatedItems));
   };
 
   const removeItem = (id: string) => {
     const item = cartItems.find(item => item.id === id);
-    setCartItems(items => items.filter(item => item.id !== id));
+    const updatedItems = cartItems.filter(item => item.id !== id);
+    setCartItems(updatedItems);
+    localStorage.setItem('vendorlink_cart', JSON.stringify(updatedItems));
+    window.dispatchEvent(new Event('cartUpdated'));
     toast({
       title: "Item Removed",
       description: `${item?.name} removed from cart`,

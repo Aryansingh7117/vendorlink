@@ -1,0 +1,208 @@
+import Navigation from "@/components/navigation";
+import Sidebar from "@/components/sidebar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Star, Package, ShoppingBag, MapPin, Phone, Mail } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useRoute } from "wouter";
+
+export default function SupplierCatalog() {
+  const { toast } = useToast();
+  const [match, params] = useRoute("/supplier-catalog/:supplierId");
+  const supplierId = params?.supplierId;
+
+  // Mock supplier data based on ID
+  const supplier = {
+    id: supplierId,
+    businessName: "Fresh Farm Supplies",
+    rating: 4.8,
+    reviewCount: 156,
+    location: "Mumbai, Maharashtra",
+    phone: "+91 98765 43210",
+    email: "contact@freshfarmsupplies.com",
+    description: "Premium quality agricultural products and bulk food supplies for businesses",
+    verified: true
+  };
+
+  const products = [
+    {
+      id: "1",
+      name: "Premium Basmati Rice",
+      category: "Grains",
+      price: 85,
+      unit: "kg",
+      minOrder: 10,
+      available: 500,
+      image: "/api/placeholder/200/150",
+      description: "High-quality aged basmati rice perfect for restaurants and hotels"
+    },
+    {
+      id: "2", 
+      name: "Pure Sunflower Oil",
+      category: "Oils",
+      price: 120,
+      unit: "L",
+      minOrder: 5,
+      available: 200,
+      image: "/api/placeholder/200/150",
+      description: "Cold-pressed sunflower oil for cooking and food preparation"
+    },
+    {
+      id: "3",
+      name: "Fresh Red Onions",
+      category: "Vegetables",
+      price: 35,
+      unit: "kg", 
+      minOrder: 25,
+      available: 1000,
+      image: "/api/placeholder/200/150",
+      description: "Farm-fresh red onions, perfect for bulk cooking requirements"
+    },
+    {
+      id: "4",
+      name: "Organic Wheat Flour",
+      category: "Grains",
+      price: 45,
+      unit: "kg",
+      minOrder: 20,
+      available: 300,
+      image: "/api/placeholder/200/150", 
+      description: "Stone-ground organic wheat flour for bakeries and restaurants"
+    }
+  ];
+
+  const handleAddToCart = (product: any) => {
+    const existingCart = JSON.parse(localStorage.getItem('vendorlink_cart') || '[]');
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      supplier: supplier.businessName,
+      price: product.price,
+      unit: product.unit,
+      quantity: product.minOrder,
+      minOrder: product.minOrder,
+      available: product.available
+    };
+    
+    const existingItemIndex = existingCart.findIndex((item: any) => item.id === product.id);
+    if (existingItemIndex >= 0) {
+      existingCart[existingItemIndex].quantity += cartItem.quantity;
+    } else {
+      existingCart.push(cartItem);
+    }
+    
+    localStorage.setItem('vendorlink_cart', JSON.stringify(existingCart));
+    window.dispatchEvent(new Event('cartUpdated'));
+    
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart`,
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <Navigation />
+      <div className="flex">
+        <Sidebar />
+        <main className="flex-1 overflow-hidden">
+          <div className="p-6 lg:p-8">
+            {/* Supplier Header */}
+            <Card className="mb-6">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Package className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <div>
+                      <h1 className="text-2xl font-bold text-slate-900 flex items-center">
+                        {supplier.businessName}
+                        {supplier.verified && (
+                          <Badge variant="default" className="ml-2">Verified</Badge>
+                        )}
+                      </h1>
+                      <p className="text-slate-600 mt-1">{supplier.description}</p>
+                      <div className="flex items-center space-x-4 mt-2">
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                          <span className="ml-1 text-sm font-medium">{supplier.rating}</span>
+                          <span className="text-sm text-slate-600 ml-1">({supplier.reviewCount} reviews)</span>
+                        </div>
+                        <div className="flex items-center text-sm text-slate-600">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {supplier.location}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center text-sm text-slate-600 mb-1">
+                      <Phone className="h-4 w-4 mr-1" />
+                      {supplier.phone}
+                    </div>
+                    <div className="flex items-center text-sm text-slate-600">
+                      <Mail className="h-4 w-4 mr-1" />
+                      {supplier.email}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Product Catalog */}
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-slate-900 mb-4">Product Catalog</h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {products.map((product) => (
+                  <Card key={product.id} className="overflow-hidden">
+                    <div className="aspect-video bg-slate-100 relative">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Package className="h-12 w-12 text-slate-400" />
+                      </div>
+                    </div>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <CardTitle className="text-lg">{product.name}</CardTitle>
+                        <Badge variant="outline">{product.category}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-slate-600 mb-3">{product.description}</p>
+                      
+                      <div className="space-y-2 mb-4">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-600">Price:</span>
+                          <span className="font-semibold">₹{product.price}/{product.unit}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-600">Min Order:</span>
+                          <span>{product.minOrder} {product.unit}s</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-600">Available:</span>
+                          <span className="text-green-600">{product.available} {product.unit}s</span>
+                        </div>
+                      </div>
+
+                      <Button 
+                        className="w-full" 
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        <ShoppingBag className="h-4 w-4 mr-2" />
+                        Add to Cart
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}

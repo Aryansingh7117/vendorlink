@@ -100,9 +100,14 @@ export default function VendorProducts() {
     setShowAddDialog(false);
     addForm.reset();
     
+    // Also save to localStorage to show in marketplace/find suppliers
+    const existingListings = JSON.parse(localStorage.getItem('vendor_listings') || '[]');
+    existingListings.push(newProduct);
+    localStorage.setItem('vendor_listings', JSON.stringify(existingListings));
+    
     toast({
       title: "Product Listed!",
-      description: `${data.name} has been added to your product catalog for suppliers to discover`,
+      description: `${data.name} has been added to your catalog and is now visible to suppliers in the marketplace`,
     });
   };
 
@@ -332,24 +337,109 @@ export default function VendorProducts() {
                     </div>
 
                     <div className="flex gap-3">
-                      <Button size="sm" onClick={() => {
-                        toast({
-                          title: "View Quotes",
-                          description: `Viewing all supplier quotes for ${product.name}`,
-                        });
-                      }}>
-                        <Eye className="h-4 w-4 mr-1" />
-                        View Quotes
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => {
-                        toast({
-                          title: "Edit Listing",
-                          description: `Opening editor for ${product.name}`,
-                        });
-                      }}>
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button size="sm">
+                            <Eye className="h-4 w-4 mr-1" />
+                            View Quotes ({product.orders})
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl">
+                          <DialogHeader>
+                            <DialogTitle>Supplier Quotes for {product.name}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            {Array.from({length: product.orders}, (_, i) => (
+                              <Card key={i}>
+                                <CardContent className="p-4">
+                                  <div className="flex justify-between items-start">
+                                    <div>
+                                      <h4 className="font-semibold">Supplier {i + 1}</h4>
+                                      <p className="text-sm text-gray-600">Price: ₹{product.price - (i * 10)}</p>
+                                      <p className="text-sm text-gray-600">Delivery: {3 + i} business days</p>
+                                    </div>
+                                    <Button size="sm">Accept Quote</Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Edit Product Listing</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div>
+                              <Label htmlFor="edit-name">Product Name</Label>
+                              <Input id="edit-name" defaultValue={product.name} />
+                            </div>
+                            <div>
+                              <Label htmlFor="edit-desc">Description</Label>
+                              <Textarea id="edit-desc" defaultValue={product.description} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="edit-price">Budget (₹)</Label>
+                                <Input id="edit-price" type="number" defaultValue={product.price} />
+                              </div>
+                              <div>
+                                <Label htmlFor="edit-stock">Quantity</Label>
+                                <Input id="edit-stock" type="number" defaultValue={product.stock} />
+                              </div>
+                            </div>
+                            <Button className="w-full" onClick={() => {
+                              const nameInput = document.getElementById('edit-name') as HTMLInputElement;
+                              const descInput = document.getElementById('edit-desc') as HTMLTextAreaElement;
+                              const priceInput = document.getElementById('edit-price') as HTMLInputElement;
+                              const stockInput = document.getElementById('edit-stock') as HTMLInputElement;
+                              
+                              const updatedProducts = products.map(p => 
+                                p.id === product.id 
+                                  ? { 
+                                      ...p, 
+                                      name: nameInput?.value || p.name,
+                                      description: descInput?.value || p.description,
+                                      price: parseFloat(priceInput?.value) || p.price,
+                                      stock: parseInt(stockInput?.value) || p.stock
+                                    }
+                                  : p
+                              );
+                              setProducts(updatedProducts);
+                              
+                              // Update localStorage as well
+                              const existingListings = JSON.parse(localStorage.getItem('vendor_listings') || '[]');
+                              const updatedListings = existingListings.map((listing: any) =>
+                                listing.id === product.id
+                                  ? {
+                                      ...listing,
+                                      name: nameInput?.value || listing.name,
+                                      description: descInput?.value || listing.description,
+                                      price: parseFloat(priceInput?.value) || listing.price,
+                                      stock: parseInt(stockInput?.value) || listing.stock
+                                    }
+                                  : listing
+                              );
+                              localStorage.setItem('vendor_listings', JSON.stringify(updatedListings));
+                              
+                              toast({
+                                title: "Listing Updated",
+                                description: "Your product listing has been updated successfully.",
+                              });
+                            }}>
+                              Update Listing
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                       {product.status === 'active' ? (
                         <Button 
                           variant="ghost" 

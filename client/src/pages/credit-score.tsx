@@ -4,9 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, CreditCard, Calendar, CheckCircle, AlertTriangle } from "lucide-react";
+import { TrendingUp, CreditCard, Calendar, CheckCircle, AlertTriangle, Shield, Download, Clock } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function CreditScore() {
+  const { toast } = useToast();
+  const [creditHistory, setCreditHistory] = useState([
+    { date: "2024-01-15", score: 750, change: "+25" },
+    { date: "2023-12-15", score: 725, change: "+15" },
+    { date: "2023-11-15", score: 710, change: "+10" },
+  ]);
   const creditData = {
     score: 750,
     maxScore: 850,
@@ -114,16 +125,95 @@ export default function CreditScore() {
                     <CardTitle>Quick Actions</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <Button className="w-full">
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Verify Business
-                    </Button>
-                    <Button variant="outline" className="w-full">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="w-full">
+                          <Shield className="h-4 w-4 mr-2" />
+                          Verify Business
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Business Verification</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="business-name">Business Name</Label>
+                            <Input id="business-name" placeholder="Enter your business name" />
+                          </div>
+                          <div>
+                            <Label htmlFor="registration-number">Registration Number</Label>
+                            <Input id="registration-number" placeholder="Business registration number" />
+                          </div>
+                          <div>
+                            <Label htmlFor="tax-id">Tax ID</Label>
+                            <Input id="tax-id" placeholder="Tax identification number" />
+                          </div>
+                          <div>
+                            <Label htmlFor="documents">Upload Documents</Label>
+                            <Input id="documents" type="file" multiple accept=".pdf,.jpg,.png" />
+                          </div>
+                          <Button className="w-full" onClick={() => {
+                            toast({
+                              title: "Verification Submitted",
+                              description: "Your business verification documents have been submitted for review.",
+                            });
+                          }}>
+                            Submit for Verification
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    
+                    <Button variant="outline" className="w-full" onClick={() => {
+                      const reportData = {
+                        score: 750,
+                        factors: factors,
+                        history: creditHistory,
+                        date: new Date().toLocaleDateString()
+                      };
+                      const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `credit-report-${new Date().toISOString().split('T')[0]}.json`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      toast({
+                        title: "Report Downloaded",
+                        description: "Your credit report has been downloaded successfully.",
+                      });
+                    }}>
+                      <Download className="h-4 w-4 mr-2" />
                       Download Report
                     </Button>
-                    <Button variant="ghost" className="w-full">
-                      View History
-                    </Button>
+                    
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" className="w-full">
+                          <Clock className="h-4 w-4 mr-2" />
+                          View History
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle>Credit Score History</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          {creditHistory.map((entry, index) => (
+                            <div key={index} className="flex justify-between items-center p-3 border rounded">
+                              <div>
+                                <p className="font-medium">{entry.date}</p>
+                                <p className="text-sm text-gray-600">Score: {entry.score}</p>
+                              </div>
+                              <div className={`font-bold ${entry.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                                {entry.change}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </CardContent>
                 </Card>
               </div>

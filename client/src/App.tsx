@@ -19,6 +19,7 @@ import Settings from "@/pages/settings";
 import Cart from "@/pages/cart";
 import SupplierProducts from "@/pages/supplier-products";
 import VendorProducts from "@/pages/vendor-products";
+import SupplierCatalog from "@/pages/supplier-catalog";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -43,6 +44,7 @@ function Router() {
           <Route path="/cart" component={Cart} />
           <Route path="/supplier-products" component={SupplierProducts} />
           <Route path="/vendor-products" component={VendorProducts} />
+          <Route path="/supplier-catalog/:supplierId" component={SupplierCatalog} />
         </>
       )}
       <Route component={NotFound} />

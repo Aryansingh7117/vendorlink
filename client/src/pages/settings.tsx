@@ -7,9 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Building, Bell, Shield, CreditCard } from "lucide-react";
+import { User, Building, Bell, Shield, CreditCard, Download, Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function Settings() {
+  const { toast } = useToast();
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   return (
     <div className="min-h-screen bg-slate-50">
       <Navigation />
@@ -151,13 +156,130 @@ export default function Settings() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button variant="outline" className="w-full sm:w-auto">
-                    Change Password
-                  </Button>
-                  <Button variant="outline" className="w-full sm:w-auto">
-                    Enable Two-Factor Authentication
-                  </Button>
-                  <Button variant="outline" className="w-full sm:w-auto">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full sm:w-auto">
+                        Change Password
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Change Password</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="current-password">Current Password</Label>
+                          <Input id="current-password" type="password" />
+                        </div>
+                        <div>
+                          <Label htmlFor="new-password">New Password</Label>
+                          <Input id="new-password" type="password" />
+                        </div>
+                        <div>
+                          <Label htmlFor="confirm-password">Confirm New Password</Label>
+                          <Input id="confirm-password" type="password" />
+                        </div>
+                        <Button className="w-full" onClick={() => {
+                          toast({
+                            title: "Password Changed",
+                            description: "Your password has been updated successfully.",
+                          });
+                        }}>
+                          Update Password
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full sm:w-auto">
+                        {twoFactorEnabled ? "Disable" : "Enable"} Two-Factor Authentication
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Two-Factor Authentication</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        {!twoFactorEnabled ? (
+                          <>
+                            <p className="text-sm text-gray-600">
+                              Scan this QR code with your authenticator app:
+                            </p>
+                            <div className="w-32 h-32 bg-gray-100 mx-auto flex items-center justify-center">
+                              <span className="text-xs text-gray-500">QR Code</span>
+                            </div>
+                            <div>
+                              <Label htmlFor="verification-code">Enter verification code</Label>
+                              <Input id="verification-code" placeholder="6-digit code" />
+                            </div>
+                            <Button className="w-full" onClick={() => {
+                              setTwoFactorEnabled(true);
+                              toast({
+                                title: "Two-Factor Enabled",
+                                description: "Two-factor authentication has been enabled for your account.",
+                              });
+                            }}>
+                              Enable Two-Factor
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-sm text-gray-600">
+                              Two-factor authentication is currently enabled for your account.
+                            </p>
+                            <Button 
+                              variant="destructive" 
+                              className="w-full" 
+                              onClick={() => {
+                                setTwoFactorEnabled(false);
+                                toast({
+                                  title: "Two-Factor Disabled",
+                                  description: "Two-factor authentication has been disabled.",
+                                });
+                              }}
+                            >
+                              Disable Two-Factor
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Button variant="outline" className="w-full sm:w-auto" onClick={() => {
+                    const userData = {
+                      profile: {
+                        firstName: "John",
+                        lastName: "Doe",
+                        email: "john.doe@example.com"
+                      },
+                      business: {
+                        name: "Acme Trading Co.",
+                        type: "vendor"
+                      },
+                      settings: {
+                        notifications: true,
+                        twoFactor: twoFactorEnabled
+                      },
+                      exportDate: new Date().toISOString()
+                    };
+                    
+                    const blob = new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `vendorlink-data-${new Date().toISOString().split('T')[0]}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    toast({
+                      title: "Data Downloaded",
+                      description: "Your account data has been downloaded successfully.",
+                    });
+                  }}>
+                    <Download className="h-4 w-4 mr-2" />
                     Download My Data
                   </Button>
                 </CardContent>
@@ -165,7 +287,12 @@ export default function Settings() {
 
               {/* Save Button */}
               <div className="flex justify-end">
-                <Button>Save Changes</Button>
+                <Button onClick={() => {
+                  toast({
+                    title: "Settings Saved",
+                    description: "All your settings have been saved successfully.",
+                  });
+                }}>Save Changes</Button>
               </div>
             </div>
           </div>
