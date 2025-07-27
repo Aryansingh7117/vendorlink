@@ -120,6 +120,8 @@ export default function Marketplace() {
   });
 
   const handleAddToCart = (product: any) => {
+    console.log('Marketplace: Adding to cart:', product); // Debug log
+    
     // Add to localStorage cart
     const existingCart = JSON.parse(localStorage.getItem('vendorlink_cart') || '[]');
     const cartItem = {
@@ -141,10 +143,24 @@ export default function Marketplace() {
       existingCart.push(cartItem);
     }
     
+    // Multiple saves for deployment robustness
     localStorage.setItem('vendorlink_cart', JSON.stringify(existingCart));
+    setTimeout(() => {
+      localStorage.setItem('vendorlink_cart', JSON.stringify(existingCart));
+    }, 50);
     
-    // Trigger custom event to update cart count in navigation
+    console.log('Marketplace: Cart after adding:', existingCart); // Debug log
+    
+    // Multiple event triggers for deployment
     window.dispatchEvent(new Event('cartUpdated'));
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'vendorlink_cart',
+      newValue: JSON.stringify(existingCart),
+      url: window.location.href
+    }));
+    setTimeout(() => {
+      window.dispatchEvent(new Event('cartUpdated'));
+    }, 100);
     
     // Show immediate feedback for cart addition
     toast({

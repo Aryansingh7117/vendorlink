@@ -16,19 +16,24 @@ export default function Navigation() {
   const [notificationCount, setNotificationCount] = useState(3);
   const [cartCount, setCartCount] = useState(0);
 
-  // Update cart count and notifications from localStorage
+  // Update cart count and notifications from localStorage (enhanced for deployment)
   useEffect(() => {
     const updateCounts = () => {
+      console.log('Navigation: Updating cart count'); // Debug log
+      
       // Update cart count
       const savedCart = localStorage.getItem('vendorlink_cart');
       if (savedCart) {
         try {
           const parsedCart = JSON.parse(savedCart);
+          console.log('Navigation: Cart items found:', parsedCart.length); // Debug log
           setCartCount(parsedCart.length);
         } catch (error) {
+          console.log('Navigation: Error parsing cart:', error); // Debug log
           setCartCount(0);
         }
       } else {
+        console.log('Navigation: No cart found'); // Debug log
         setCartCount(0);
       }
 
@@ -46,17 +51,21 @@ export default function Navigation() {
     // Initial load
     updateCounts();
 
-    // Listen for storage changes
+    // Listen for storage changes (enhanced for deployment)
     window.addEventListener('storage', updateCounts);
-    
-    // Custom event for same-tab updates
     window.addEventListener('cartUpdated', updateCounts);
     window.addEventListener('alertsUpdated', updateCounts);
+    window.addEventListener('focus', updateCounts);
+    
+    // Check periodically for deployed version
+    const interval = setInterval(updateCounts, 1000);
 
     return () => {
       window.removeEventListener('storage', updateCounts);
       window.removeEventListener('cartUpdated', updateCounts);
       window.removeEventListener('alertsUpdated', updateCounts);
+      window.removeEventListener('focus', updateCounts);
+      clearInterval(interval);
     };
   }, []);
 

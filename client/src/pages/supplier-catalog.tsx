@@ -100,6 +100,8 @@ export default function SupplierCatalog() {
     });
 
   const handleAddToCart = (product: any) => {
+    console.log('Supplier Catalog: Adding to cart:', product); // Debug log
+    
     const existingCart = JSON.parse(localStorage.getItem('vendorlink_cart') || '[]');
     const cartItem = {
       id: product.id,
@@ -119,8 +121,24 @@ export default function SupplierCatalog() {
       existingCart.push(cartItem);
     }
     
+    // Multiple saves for deployment robustness
     localStorage.setItem('vendorlink_cart', JSON.stringify(existingCart));
+    setTimeout(() => {
+      localStorage.setItem('vendorlink_cart', JSON.stringify(existingCart));
+    }, 50);
+    
+    console.log('Supplier Catalog: Cart after adding:', existingCart); // Debug log
+    
+    // Multiple event triggers for deployment
     window.dispatchEvent(new Event('cartUpdated'));
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'vendorlink_cart',
+      newValue: JSON.stringify(existingCart),
+      url: window.location.href
+    }));
+    setTimeout(() => {
+      window.dispatchEvent(new Event('cartUpdated'));
+    }, 100);
     
     toast({
       title: "Added to Cart",
