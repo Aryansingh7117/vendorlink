@@ -163,20 +163,78 @@ export async function setupAuth(app: Express) {
       passport.use(strategy);
     }
 
-    passport.serializeUser((user: Express.User, cb) => cb(null, user));
-    passport.deserializeUser((user: Express.User, cb) => cb(null, user));
+    passport.serializeUser((user: any, cb) => {
+      console.log("Serializing user:", { hasUser: !!user, hasClaims: !!(user?.claims) });
+      cb(null, user);
+    });
+    
+    passport.deserializeUser((user: any, cb) => {
+      console.log("Deserializing user:", { hasUser: !!user, hasClaims: !!(user?.claims) });
+      cb(null, user);
+    });
 
     app.get("/api/login", (req, res, next) => {
-      passport.authenticate(`replitauth:${req.hostname}`, {
+      const hostname = req.hostname;
+      const strategyName = `replitauth:${hostname}`;
+      
+      console.log(`Login attempt for hostname: ${hostname}, strategy: ${strategyName}`);
+      console.log(`Available strategies:`, Object.keys((passport as any)._strategies || {}));
+      
+      // Try to find a matching strategy or use the first available one
+      const availableStrategies = Object.keys((passport as any)._strategies || {});
+      const matchingStrategy = availableStrategies.find(s => s === strategyName) || 
+                               availableStrategies.find(s => s.startsWith('replitauth:'));
+      
+      if (!matchingStrategy) {
+        console.error("No authentication strategy found");
+        return res.status(500).json({ message: "Authentication not configured properly" });
+      }
+      
+      console.log(`Using authentication strategy: ${matchingStrategy}`);
+      passport.authenticate(matchingStrategy, {
         prompt: "login consent",
         scope: ["openid", "email", "profile", "offline_access"],
       })(req, res, next);
     });
 
     app.get("/api/callback", (req, res, next) => {
-      passport.authenticate(`replitauth:${req.hostname}`, {
-        successReturnToOrRedirect: "/",
-        failureRedirect: "/api/login",
+      const hostname = req.hostname;
+      const strategyName = `replitauth:${hostname}`;
+      
+      console.log(`Handling callback for hostname: ${hostname}, strategy: ${strategyName}`);
+      console.log(`Available strategies:`, Object.keys((passport as any)._strategies || {}));
+      
+      // Try to find a matching strategy or use the first available one
+      const availableStrategies = Object.keys((passport as any)._strategies || {});
+      const matchingStrategy = availableStrategies.find(s => s === strategyName) || 
+                               availableStrategies.find(s => s.startsWith('replitauth:'));
+      
+      if (!matchingStrategy) {
+        console.error("No authentication strategy found for callback");
+        return res.status(500).json({ message: "Authentication callback failed - no strategy" });
+      }
+      
+      console.log(`Using callback strategy: ${matchingStrategy}`);
+      passport.authenticate(matchingStrategy, (err: any, user: any, info: any) => {
+        if (err) {
+          console.error("Authentication error:", err);
+          return res.redirect("/api/login?error=auth_failed");
+        }
+        
+        if (!user) {
+          console.error("Authentication failed - no user:", info);
+          return res.redirect("/api/login?error=no_user");
+        }
+        
+        req.logIn(user, (loginErr: any) => {
+          if (loginErr) {
+            console.error("Login error:", loginErr);
+            return res.redirect("/api/login?error=login_failed");
+          }
+          
+          console.log("Authentication successful, redirecting to home");
+          return res.redirect("/");
+        });
       })(req, res, next);
     });
 
