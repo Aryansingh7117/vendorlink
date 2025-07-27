@@ -21,6 +21,9 @@ import Cart from "@/pages/cart";
 import SupplierProducts from "@/pages/supplier-products";
 import VendorProducts from "@/pages/vendor-products";
 import SupplierCatalog from "@/pages/supplier-catalog";
+import CustomerSupport from "@/pages/customer-support";
+import Feedback from "@/pages/feedback";
+import DeliveryTracking from "@/pages/delivery-tracking";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -46,6 +49,9 @@ function Router() {
           <Route path="/supplier-products" component={SupplierProducts} />
           <Route path="/vendor-products" component={VendorProducts} />
           <Route path="/supplier-catalog/:supplierId" component={SupplierCatalog} />
+          <Route path="/customer-support" component={CustomerSupport} />
+          <Route path="/feedback" component={Feedback} />
+          <Route path="/delivery-tracking" component={DeliveryTracking} />
         </>
       )}
       <Route component={NotFound} />

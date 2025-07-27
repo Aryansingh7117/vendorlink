@@ -16,9 +16,10 @@ export default function Navigation() {
   const [notificationCount, setNotificationCount] = useState(3);
   const [cartCount, setCartCount] = useState(0);
 
-  // Update cart count from localStorage
+  // Update cart count and notifications from localStorage
   useEffect(() => {
-    const updateCartCount = () => {
+    const updateCounts = () => {
+      // Update cart count
       const savedCart = localStorage.getItem('vendorlink_cart');
       if (savedCart) {
         try {
@@ -30,29 +31,56 @@ export default function Navigation() {
       } else {
         setCartCount(0);
       }
+
+      // Update notification count based on alerts
+      const savedAlerts = localStorage.getItem('vendorlink_price_alerts');
+      const alertCount = savedAlerts ? JSON.parse(savedAlerts).length : 0;
+      const cartItems = localStorage.getItem('vendorlink_cart');
+      const cartItemCount = cartItems ? JSON.parse(cartItems).length : 0;
+      
+      // Set notification count: alerts + cart items (if any)
+      const totalNotifications = alertCount + (cartItemCount > 0 ? 1 : 0);
+      setNotificationCount(Math.max(0, totalNotifications));
     };
 
     // Initial load
-    updateCartCount();
+    updateCounts();
 
     // Listen for storage changes
-    window.addEventListener('storage', updateCartCount);
+    window.addEventListener('storage', updateCounts);
     
     // Custom event for same-tab updates
-    window.addEventListener('cartUpdated', updateCartCount);
+    window.addEventListener('cartUpdated', updateCounts);
+    window.addEventListener('alertsUpdated', updateCounts);
 
     return () => {
-      window.removeEventListener('storage', updateCartCount);
-      window.removeEventListener('cartUpdated', updateCartCount);
+      window.removeEventListener('storage', updateCounts);
+      window.removeEventListener('cartUpdated', updateCounts);
+      window.removeEventListener('alertsUpdated', updateCounts);
     };
   }, []);
 
   const handleNotificationClick = () => {
+    // Get real notifications from localStorage or API
+    const savedAlerts = localStorage.getItem('vendorlink_price_alerts');
+    const alertCount = savedAlerts ? JSON.parse(savedAlerts).length : 0;
+    const cartItems = localStorage.getItem('vendorlink_cart');
+    const cartCount = cartItems ? JSON.parse(cartItems).length : 0;
+    
+    const notificationMessage = alertCount > 0 
+      ? `You have ${alertCount} active price alerts and ${cartCount} items in cart`
+      : cartCount > 0 
+        ? `You have ${cartCount} items in your cart`
+        : "No new notifications";
+    
     toast({
       title: "Notifications",
-      description: "You have new price alerts and order updates to review.",
+      description: notificationMessage,
     });
-    setNotificationCount(0);
+    
+    // Update notification count based on real data
+    const totalNotifications = alertCount + (cartCount > 0 ? 1 : 0);
+    setNotificationCount(Math.max(0, totalNotifications));
   };
 
   return (

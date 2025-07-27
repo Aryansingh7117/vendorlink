@@ -290,7 +290,12 @@ export default function VendorDashboard() {
                         +12%
                       </Badge>
                     </div>
-                    <Button variant="outline" className="w-full" data-testid="button-manage-alerts">
+                    <Button 
+                      variant="outline" 
+                      className="w-full" 
+                      data-testid="button-manage-alerts"
+                      onClick={() => window.location.href = '/price-tracking'}
+                    >
                       Manage Alerts
                     </Button>
                   </CardContent>

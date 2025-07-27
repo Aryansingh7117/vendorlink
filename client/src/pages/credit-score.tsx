@@ -70,7 +70,7 @@ export default function CreditScore() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
       <Navigation />
       <div className="flex">
         <Sidebar />

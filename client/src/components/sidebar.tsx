@@ -11,7 +11,10 @@ import {
   Settings,
   Package,
   Clock,
-  CheckCircle
+  CheckCircle,
+  MessageCircle,
+  Send,
+  Truck
 } from "lucide-react";
 
 interface SidebarProps {
@@ -44,6 +47,12 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
   const accountNavItems = [
     { icon: CreditCard, label: "Credit Score", href: "/credit-score" },
     { icon: Settings, label: "Settings", href: "/settings" },
+  ];
+
+  const supportNavItems = [
+    { icon: MessageCircle, label: "Customer Support", href: "/customer-support" },
+    { icon: Send, label: "Send Feedback", href: "/feedback" },
+    { icon: Truck, label: "Track Delivery", href: "/delivery-tracking" },
   ];
 
   const NavSection = ({ title, items }: { title: string; items: typeof vendorNavItems }) => (
@@ -94,6 +103,7 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
           )}
           
           <NavSection title="Account" items={accountNavItems} />
+          <NavSection title="Support" items={supportNavItems} />
         </div>
       </div>
     </aside>

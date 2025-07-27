@@ -74,7 +74,7 @@ export default function SavedSuppliers() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
       <Navigation />
       <div className="flex">
         <Sidebar />
@@ -83,8 +83,8 @@ export default function SavedSuppliers() {
             <div className="mb-8">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900">Find Suppliers</h1>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Find Suppliers</h1>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-gray-300">
                     Discover and connect with verified suppliers
                   </p>
                 </div>
@@ -107,7 +107,7 @@ export default function SavedSuppliers() {
 
             <div className="grid gap-6">
               {filteredSuppliers.length === 0 ? (
-                <div className="text-center py-12 text-slate-500">
+                <div className="text-center py-12 text-slate-500 dark:text-gray-400">
                   <Search className="h-12 w-12 mx-auto mb-4 text-slate-300" />
                   <p>No suppliers found matching your search</p>
                   <p className="text-sm">Try different keywords or browse all suppliers</p>

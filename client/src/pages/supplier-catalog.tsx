@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Star, Package, ShoppingBag, MapPin, Phone, Mail } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Star, Package, ShoppingBag, MapPin, Phone, Mail, SortAsc } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRoute } from "wouter";
@@ -15,6 +16,8 @@ export default function SupplierCatalog() {
   const [match, params] = useRoute("/supplier-catalog/:supplierId");
   const [location] = useLocation();
   const supplierId = params?.supplierId || location.split('/').pop();
+  const [sortBy, setSortBy] = useState("name");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Mock supplier data based on ID
   const supplier = {
@@ -155,11 +158,35 @@ export default function SupplierCatalog() {
               </CardContent>
             </Card>
 
+            {/* Search and Sort Controls */}
+            <div className="mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+              <Input
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="md:w-80"
+              />
+              <div className="flex items-center gap-2">
+                <SortAsc className="h-4 w-4 text-slate-600 dark:text-gray-300" />
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Sort by..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="name">Name A-Z</SelectItem>
+                    <SelectItem value="price-low">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="category">Category</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             {/* Product Catalog */}
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Product Catalog</h2>
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Product Catalog ({filteredProducts.length})</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                   <Card key={product.id} className="overflow-hidden">
                     <div className="aspect-video bg-slate-100 relative">
                       <div className="absolute inset-0 flex items-center justify-center">

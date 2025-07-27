@@ -128,6 +128,10 @@ export default function PriceTracking() {
                         };
                         setAlerts([...alerts, newAlert]);
                         
+                        // Save to localStorage and trigger notification update
+                        localStorage.setItem('vendorlink_price_alerts', JSON.stringify([...alerts, newAlert]));
+                        window.dispatchEvent(new Event('alertsUpdated'));
+                        
                         // Clear form inputs
                         if (productInput) productInput.value = '';
                         if (targetPriceInput) targetPriceInput.value = '';
