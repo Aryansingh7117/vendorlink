@@ -162,7 +162,7 @@ export default function SavedSuppliers() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900 animate-fade-in">
       <Navigation />
       <div className="flex">
         <Sidebar />

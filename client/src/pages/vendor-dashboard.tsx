@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -9,6 +9,7 @@ import Sidebar from "@/components/sidebar";
 import Navigation from "@/components/navigation";
 import GroupOrderCard from "@/components/group-order-card";
 import OrderTable from "@/components/order-table";
+import { LoadingGrid, LoadingSpinner } from "@/components/loading-card";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { 
   ShoppingCart, 
@@ -24,6 +25,15 @@ import {
 export default function VendorDashboard() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading } = useAuth();
+  const [pageLoading, setPageLoading] = useState(true);
+
+  // Add page loading delay for smooth transition
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -68,15 +78,19 @@ export default function VendorDashboard() {
     return () => window.removeEventListener('cartUpdated', handleCartUpdate);
   }, [refetchOrders, refetchGroupOrders]);
 
-  if (isLoading || !isAuthenticated) {
-    return <div>Loading...</div>;
+  if (isLoading || pageLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <LoadingSpinner size="lg" text="Loading your dashboard..." />
+      </div>
+    );
   }
 
   const recentOrders = orders.slice(0, 5);
   const activeGroupOrders = groupOrders.slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900 animate-fade-in">
       <Navigation />
       <div className="flex">
         <Sidebar userRole="vendor" />
@@ -107,7 +121,7 @@ export default function VendorDashboard() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-slide-up">
               <Card>
                 <CardContent className="p-5">
                   <div className="flex items-center">

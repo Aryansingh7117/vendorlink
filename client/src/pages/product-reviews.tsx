@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -335,6 +335,9 @@ export default function ProductReviews() {
               <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>Reply to Review</DialogTitle>
+                  <DialogDescription>
+                    Share your thoughts or ask questions about this review to help the community.
+                  </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                   <Textarea 
