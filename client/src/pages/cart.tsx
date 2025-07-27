@@ -153,11 +153,37 @@ export default function Cart() {
         // Invalidate orders query to refresh the orders list
         queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
         
+        // Also store in localStorage for immediate display
+        const existingOrders = JSON.parse(localStorage.getItem('demo_orders') || '[]');
+        const newOrders = cartItems.map(item => ({
+          id: `order-${Math.random().toString(36).substr(2, 9)}`,
+          productName: item.name,
+          quantity: item.quantity,
+          totalAmount: (item.price * item.quantity).toFixed(2),
+          pricePerUnit: item.price.toFixed(2),
+          status: 'pending',
+          supplier: item.supplier,
+          supplierName: item.supplier,
+          orderDate: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          deliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+          expectedDeliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+        }));
+        
+        localStorage.setItem('demo_orders', JSON.stringify([...existingOrders, ...newOrders]));
+        
+        // Immediately trigger UI updates
+        window.dispatchEvent(new Event('ordersUpdated'));
+        window.setTimeout(() => {
+          window.dispatchEvent(new Event('ordersUpdated'));
+        }, 100);
+        
         // Clear cart after successful order
         setTimeout(() => {
           setCartItems([]);
           localStorage.removeItem('vendorlink_cart');
           window.dispatchEvent(new Event('cartUpdated'));
+          window.dispatchEvent(new Event('ordersUpdated'));
         }, 2000);
       } else {
         throw new Error('Order placement failed');
@@ -193,12 +219,18 @@ export default function Cart() {
       
       localStorage.setItem('demo_orders', JSON.stringify([...existingOrders, ...newOrders]));
       
+      // Immediately trigger UI updates
+      window.dispatchEvent(new Event('ordersUpdated'));
+      window.setTimeout(() => {
+        window.dispatchEvent(new Event('ordersUpdated'));
+      }, 100);
+      
       // Clear cart
       setTimeout(() => {
         setCartItems([]);
         localStorage.removeItem('vendorlink_cart');
         window.dispatchEvent(new Event('cartUpdated'));
-        window.dispatchEvent(new Event('ordersUpdated')); // Trigger orders refresh
+        window.dispatchEvent(new Event('ordersUpdated')); // Trigger orders refresh again
       }, 2000);
     }
   };

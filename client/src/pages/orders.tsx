@@ -41,6 +41,7 @@ export default function Orders() {
   useEffect(() => {
     const loadDemoOrders = () => {
       const storedOrders = JSON.parse(localStorage.getItem('demo_orders') || '[]');
+      console.log('Orders page loading demo orders:', storedOrders); // Debug log
       setDemoOrders(storedOrders);
     };
 
@@ -51,6 +52,7 @@ export default function Orders() {
 
   // Combine API orders with demo orders
   const orders: Order[] = [...(Array.isArray(apiOrders) ? apiOrders : []), ...demoOrders];
+  console.log('Orders page - All orders:', orders); // Debug log
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
