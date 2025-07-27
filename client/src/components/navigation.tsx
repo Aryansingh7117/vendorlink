@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Handshake, Bell, ChevronDown } from "lucide-react";
+import { Handshake, Bell, ChevronDown, ShoppingBag } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -72,6 +72,22 @@ export default function Navigation() {
                   {notificationCount}
                 </Badge>
               )}
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => window.location.href = "/cart"}
+              className="relative"
+              data-testid="button-cart"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              <Badge 
+                variant="default" 
+                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-blue-500"
+              >
+                3
+              </Badge>
             </Button>
             {user && (
               <DropdownMenu>

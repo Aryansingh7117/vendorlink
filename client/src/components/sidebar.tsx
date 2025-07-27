@@ -35,7 +35,7 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
 
   const supplierNavItems = [
     { icon: BarChart3, label: "Overview", href: "/supplier-dashboard" },
-    { icon: Package, label: "My Products", href: "/my-products" },
+    { icon: Package, label: "My Products", href: "/supplier-products" },
     { icon: Clock, label: "Pending Orders", href: "/pending-orders" },
     { icon: CheckCircle, label: "Order History", href: "/order-history" },
   ];

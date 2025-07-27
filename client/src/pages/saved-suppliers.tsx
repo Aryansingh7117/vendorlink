@@ -2,10 +2,15 @@ import Navigation from "@/components/navigation";
 import Sidebar from "@/components/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, Star, MapPin, Phone, Mail } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Heart, Star, MapPin, Phone, Mail, Search } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SavedSuppliers() {
-  const savedSuppliers = [
+  const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [savedSuppliers, setSavedSuppliers] = useState([
     {
       id: "1",
       businessName: "Fresh Farm Supplies",
@@ -16,6 +21,7 @@ export default function SavedSuppliers() {
       email: "contact@freshfarm.com",
       specialties: ["Organic Vegetables", "Dairy Products", "Fresh Fruits"],
       isVerified: true,
+      isSaved: true,
     },
     {
       id: "2", 
@@ -27,8 +33,45 @@ export default function SavedSuppliers() {
       email: "info@globaltrade.com",
       specialties: ["Electronics", "Industrial Equipment", "Raw Materials"],
       isVerified: true,
+      isSaved: true,
+    },
+    {
+      id: "3",
+      businessName: "Spice Masters Co",
+      rating: 4.9,
+      reviewCount: 203,
+      location: "Chennai, Tamil Nadu",
+      phone: "+91 76543 21098",
+      email: "orders@spicemasters.com",
+      specialties: ["Spices", "Condiments", "Masala Powders"],
+      isVerified: true,
+      isSaved: false,
     }
-  ];
+  ]);
+
+  const toggleSaved = (id: string) => {
+    setSavedSuppliers(suppliers => 
+      suppliers.map(supplier => {
+        if (supplier.id === id) {
+          const newSavedStatus = !supplier.isSaved;
+          toast({
+            title: newSavedStatus ? "Supplier Saved" : "Supplier Removed",
+            description: `${supplier.businessName} ${newSavedStatus ? 'added to' : 'removed from'} your saved suppliers`,
+          });
+          return { ...supplier, isSaved: newSavedStatus };
+        }
+        return supplier;
+      })
+    );
+  };
+
+  const filteredSuppliers = savedSuppliers.filter(supplier =>
+    supplier.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    supplier.specialties.some(specialty => 
+      specialty.toLowerCase().includes(searchTerm.toLowerCase())
+    ) ||
+    supplier.location.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -38,14 +81,39 @@ export default function SavedSuppliers() {
         <main className="flex-1 overflow-hidden">
           <div className="p-6 lg:p-8">
             <div className="mb-8">
-              <h1 className="text-2xl font-bold text-slate-900">Saved Suppliers</h1>
-              <p className="mt-1 text-sm text-slate-600">
-                Your bookmarked suppliers for quick access
-              </p>
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-slate-900">Find Suppliers</h1>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Discover and connect with verified suppliers
+                  </p>
+                </div>
+                <div className="mt-4 lg:mt-0 lg:ml-6">
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="Search suppliers, products, or location..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full lg:w-80 pl-10"
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                      <Search className="h-4 w-4 text-slate-400" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="grid gap-6">
-              {savedSuppliers.map((supplier) => (
+              {filteredSuppliers.length === 0 ? (
+                <div className="text-center py-12 text-slate-500">
+                  <Search className="h-12 w-12 mx-auto mb-4 text-slate-300" />
+                  <p>No suppliers found matching your search</p>
+                  <p className="text-sm">Try different keywords or browse all suppliers</p>
+                </div>
+              ) : (
+                filteredSuppliers.map((supplier) => (
                 <Card key={supplier.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -58,8 +126,12 @@ export default function SavedSuppliers() {
                           </div>
                         )}
                       </div>
-                      <Button variant="ghost" size="sm">
-                        <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => toggleSaved(supplier.id)}
+                      >
+                        <Heart className={`h-4 w-4 ${supplier.isSaved ? 'fill-red-500 text-red-500' : 'text-slate-400'}`} />
                       </Button>
                     </div>
                   </CardHeader>
@@ -98,13 +170,35 @@ export default function SavedSuppliers() {
                       </div>
                     </div>
                     <div className="flex gap-3 mt-4">
-                      <Button onClick={() => window.location.href = "/marketplace"}>View Products</Button>
-                      <Button variant="outline" onClick={() => alert(`Contacting ${supplier.businessName}...`)}>Contact Supplier</Button>
-                      <Button variant="ghost" onClick={() => alert(`Removed ${supplier.businessName} from saved suppliers`)}>Remove from Saved</Button>
+                      <Button onClick={() => {
+                        toast({
+                          title: "Viewing Products",
+                          description: `Opening ${supplier.businessName}'s product catalog`,
+                        });
+                        setTimeout(() => window.location.href = "/marketplace", 1000);
+                      }}>
+                        View Products
+                      </Button>
+                      <Button variant="outline" onClick={() => {
+                        toast({
+                          title: "Contact Initiated",
+                          description: `Connecting you with ${supplier.businessName}. Check your email for contact details.`,
+                        });
+                      }}>
+                        Contact Supplier
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        onClick={() => toggleSaved(supplier.id)}
+                        className={supplier.isSaved ? "text-red-600" : "text-blue-600"}
+                      >
+                        {supplier.isSaved ? "Remove from Saved" : "Save Supplier"}
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </main>

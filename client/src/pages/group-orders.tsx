@@ -270,40 +270,7 @@ export default function GroupOrders() {
                       </DialogHeader>
                       <Form {...createForm}>
                         <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                          <FormField
-                            control={createForm.control}
-                            name="productId"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Product</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger data-testid="select-product">
-                                      <SelectValue placeholder="Select a product" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {products.length === 0 ? (
-                                      <>
-                                        <SelectItem value="sample-rice">Premium Basmati Rice - ₹85/kg</SelectItem>
-                                        <SelectItem value="sample-oil">Sunflower Oil - ₹120/L</SelectItem>
-                                        <SelectItem value="sample-onions">Red Onions - ₹35/kg</SelectItem>
-                                        <SelectItem value="sample-wheat">Wheat Flour - ₹45/kg</SelectItem>
-                                        <SelectItem value="sample-sugar">White Sugar - ₹42/kg</SelectItem>
-                                      </>
-                                    ) : (
-                                      products.map((product) => (
-                                        <SelectItem key={product.id} value={product.id}>
-                                          {product.name} - ₹{product.pricePerUnit}/{product.unit}
-                                        </SelectItem>
-                                      ))
-                                    )}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+
                           
                           <FormField
                             control={createForm.control}

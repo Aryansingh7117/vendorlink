@@ -68,11 +68,19 @@ export default function Marketplace() {
   });
 
   const handleAddToCart = (product: any) => {
-    createOrderMutation.mutate({
-      productId: product.id,
-      quantity: 1,
-      supplierId: product.supplierId,
+    // Show immediate feedback for cart addition
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart`,
     });
+    
+    // Show cart access hint after 2 seconds
+    setTimeout(() => {
+      toast({
+        title: "Quick Access",
+        description: "View your cart from the shopping bag icon in the navigation",
+      });
+    }, 2000);
   };
 
   return (

@@ -16,6 +16,8 @@ import PriceTracking from "@/pages/price-tracking";
 import MyProducts from "@/pages/my-products";
 import CreditScore from "@/pages/credit-score";
 import Settings from "@/pages/settings";
+import Cart from "@/pages/cart";
+import SupplierProducts from "@/pages/supplier-products";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -37,6 +39,8 @@ function Router() {
           <Route path="/my-products" component={MyProducts} />
           <Route path="/credit-score" component={CreditScore} />
           <Route path="/settings" component={Settings} />
+          <Route path="/cart" component={Cart} />
+          <Route path="/supplier-products" component={SupplierProducts} />
         </>
       )}
       <Route component={NotFound} />

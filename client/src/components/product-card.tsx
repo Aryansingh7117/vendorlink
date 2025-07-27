@@ -81,7 +81,20 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           </div>
           <div className="ml-4">
             <Button
-              onClick={() => onAddToCart?.(product)}
+              onClick={() => {
+                onAddToCart?.(product);
+                // Show immediate visual feedback
+                const button = document.activeElement as HTMLButtonElement;
+                if (button) {
+                  const originalText = button.textContent;
+                  button.textContent = "Added!";
+                  button.disabled = true;
+                  setTimeout(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                  }, 1500);
+                }
+              }}
               disabled={product.availableQuantity === 0}
               data-testid={`button-add-to-cart-${product.id}`}
             >

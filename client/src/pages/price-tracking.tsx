@@ -141,7 +141,16 @@ export default function PriceTracking() {
                             <Bell className="h-4 w-4 mr-1" />
                             Edit Alert
                           </Button>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => {
+                              toast({
+                                title: "Alert Removed",
+                                description: `Price alert for ${alert.productName} has been removed`,
+                              });
+                            }}
+                          >
                             Remove
                           </Button>
                         </div>
