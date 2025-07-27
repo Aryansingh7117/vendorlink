@@ -8,11 +8,13 @@ import { Star, Package, ShoppingBag, MapPin, Phone, Mail } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRoute } from "wouter";
+import { useLocation } from "wouter";
 
 export default function SupplierCatalog() {
   const { toast } = useToast();
   const [match, params] = useRoute("/supplier-catalog/:supplierId");
-  const supplierId = params?.supplierId;
+  const [location] = useLocation();
+  const supplierId = params?.supplierId || location.split('/').pop();
 
   // Mock supplier data based on ID
   const supplier = {

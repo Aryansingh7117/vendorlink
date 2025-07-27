@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Handshake, Bell, ChevronDown, ShoppingBag } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -66,21 +67,21 @@ export default function Navigation() {
             <div className="hidden md:flex items-center space-x-6">
               <Link 
                 href="/marketplace" 
-                className="text-slate-600 hover:text-primary font-medium transition-colors"
+                className="text-slate-600 dark:text-slate-300 hover:text-primary font-medium transition-colors"
                 data-testid="link-marketplace"
               >
                 Marketplace
               </Link>
               <Link 
                 href="/group-orders" 
-                className="text-slate-600 hover:text-primary font-medium transition-colors"
+                className="text-slate-600 dark:text-slate-300 hover:text-primary font-medium transition-colors"
                 data-testid="link-group-orders"
               >
                 Group Orders
               </Link>
               <Link 
                 href="/orders" 
-                className="text-slate-600 hover:text-primary font-medium transition-colors"
+                className="text-slate-600 dark:text-slate-300 hover:text-primary font-medium transition-colors"
                 data-testid="link-orders"
               >
                 My Orders
@@ -123,6 +124,9 @@ export default function Navigation() {
                 </Badge>
               )}
             </Button>
+            
+            <ThemeToggle />
+            
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center space-x-3" data-testid="button-user-menu">
