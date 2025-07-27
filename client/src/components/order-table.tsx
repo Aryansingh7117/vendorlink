@@ -2,13 +2,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CheckCircle, Truck, Clock, Star } from "lucide-react";
-import type { Order } from "@shared/schema";
 
 interface OrderTableProps {
-  orders: (Order & {
-    product?: { name: string; unit: string };
-    supplier?: { businessName?: string };
-  })[];
+  orders: any[];
   onTrackOrder?: (orderId: string) => void;
   onRateSupplier?: (orderId: string) => void;
   onReorder?: (orderId: string) => void;
@@ -61,7 +57,7 @@ export default function OrderTable({
         <TableBody>
           {orders.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-8 text-slate-500">
+              <TableCell colSpan={7} className="text-center py-8 text-slate-500 dark:text-gray-400">
                 No orders found
               </TableCell>
             </TableRow>
@@ -69,68 +65,67 @@ export default function OrderTable({
             orders.map((order) => (
               <TableRow 
                 key={order.id} 
-                className="hover:bg-slate-50"
+                className="hover:bg-slate-50 dark:hover:bg-gray-800"
                 data-testid={`row-order-${order.id}`}
               >
                 <TableCell className="font-medium" data-testid={`text-order-id-${order.id}`}>
                   {formatOrderId(order.id)}
                 </TableCell>
                 <TableCell data-testid={`text-product-${order.id}`}>
-                  {order.product?.name || 'Unknown Product'}
+                  {order.productName || order.product?.name || 'Unknown Product'}
                 </TableCell>
                 <TableCell data-testid={`text-supplier-${order.id}`}>
-                  {order.supplier?.businessName || 'Unknown Supplier'}
+                  {order.supplierName || order.supplier?.businessName || order.supplier || 'Unknown Supplier'}
                 </TableCell>
                 <TableCell data-testid={`text-quantity-${order.id}`}>
-                  {order.quantity} {order.product?.unit}
+                  {order.quantity} units
                 </TableCell>
-                <TableCell className="font-medium" data-testid={`text-total-${order.id}`}>
-                  ₹{order.totalAmount}
+                <TableCell data-testid={`text-total-${order.id}`}>
+                  ₹{parseFloat(String(order.totalAmount || "0")).toLocaleString()}
                 </TableCell>
-                <TableCell data-testid={`status-${order.id}`}>
+                <TableCell data-testid={`text-status-${order.id}`}>
                   {getStatusBadge(order.status)}
                 </TableCell>
-                <TableCell>
+                <TableCell data-testid={`text-actions-${order.id}`}>
                   <div className="flex gap-2">
-                    {order.status === 'delivered' && (
-                      <Button
+                    {onTrackOrder && (
+                      <Button 
+                        variant="ghost" 
                         size="sm"
-                        variant="ghost"
-                        onClick={() => onRateSupplier?.(order.id)}
-                        data-testid={`button-rate-${order.id}`}
-                      >
-                        <Star className="w-3 h-3 mr-1" />
-                        Rate
-                      </Button>
-                    )}
-                    {order.status === 'in_transit' && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => onTrackOrder?.(order.id)}
+                        onClick={() => onTrackOrder(order.id)}
                         data-testid={`button-track-${order.id}`}
                       >
-                        Track
+                        <Truck className="h-4 w-4" />
                       </Button>
                     )}
-                    {order.status === 'pending' && (
-                      <Button
+                    {onRateSupplier && order.status === 'delivered' && (
+                      <Button 
+                        variant="ghost" 
                         size="sm"
-                        variant="ghost"
-                        onClick={() => onCancelOrder?.(order.id)}
-                        data-testid={`button-cancel-${order.id}`}
+                        onClick={() => onRateSupplier(order.id)}
+                        data-testid={`button-rate-${order.id}`}
                       >
-                        Cancel
+                        <Star className="h-4 w-4" />
                       </Button>
                     )}
-                    {order.status === 'delivered' && (
-                      <Button
+                    {onReorder && (
+                      <Button 
+                        variant="ghost" 
                         size="sm"
-                        variant="ghost"
-                        onClick={() => onReorder?.(order.id)}
+                        onClick={() => onReorder(order.id)}
                         data-testid={`button-reorder-${order.id}`}
                       >
                         Reorder
+                      </Button>
+                    )}
+                    {onCancelOrder && order.status === 'pending' && (
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={() => onCancelOrder(order.id)}
+                        data-testid={`button-cancel-${order.id}`}
+                      >
+                        Cancel
                       </Button>
                     )}
                   </div>

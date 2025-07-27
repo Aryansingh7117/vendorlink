@@ -181,10 +181,14 @@ export default function Cart() {
         productName: item.name,
         quantity: item.quantity,
         totalAmount: (item.price * item.quantity).toFixed(2),
+        pricePerUnit: item.price.toFixed(2),
         status: 'pending',
         supplier: item.supplier,
+        supplierName: item.supplier,
         orderDate: new Date().toISOString(),
-        deliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+        createdAt: new Date().toISOString(),
+        deliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+        expectedDeliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
       }));
       
       localStorage.setItem('demo_orders', JSON.stringify([...existingOrders, ...newOrders]));
