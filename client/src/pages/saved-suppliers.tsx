@@ -181,9 +181,14 @@ export default function SavedSuppliers() {
                         View Products
                       </Button>
                       <Button variant="outline" onClick={() => {
+                        // Open email client with pre-filled message
+                        const subject = encodeURIComponent(`Business Inquiry - VendorLink`);
+                        const body = encodeURIComponent(`Hi ${supplier.businessName},\n\nI'm interested in your products and would like to discuss potential business opportunities.\n\nYou can also reach me at ${supplier.phone}\n\nBest regards`);
+                        window.open(`mailto:${supplier.email}?subject=${subject}&body=${body}`, '_blank');
+                        
                         toast({
-                          title: "Contact Initiated",
-                          description: `Connecting you with ${supplier.businessName}. Check your email for contact details.`,
+                          title: "Email Client Opened",
+                          description: `Composing email to ${supplier.businessName}`,
                         });
                       }}>
                         Contact Supplier

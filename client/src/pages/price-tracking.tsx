@@ -110,20 +110,31 @@ export default function PriceTracking() {
                         </Select>
                       </div>
                       <Button className="w-full" onClick={() => {
+                        const productInput = document.getElementById('product') as HTMLInputElement;
+                        const targetPriceInput = document.getElementById('target-price') as HTMLInputElement;
+                        
+                        const productName = productInput?.value || "New Product Alert";
+                        const targetPrice = parseFloat(targetPriceInput?.value || "90");
+                        
                         const newAlert = {
                           id: Date.now().toString(),
-                          productName: "New Product Alert",
-                          currentPrice: 100,
-                          targetPrice: 90,
+                          productName: productName,
+                          currentPrice: targetPrice + 10,
+                          targetPrice: targetPrice,
                           supplier: "Various Suppliers",
                           trend: "stable" as const,
                           changePercent: 0,
                           status: "active" as const
                         };
                         setAlerts([...alerts, newAlert]);
+                        
+                        // Clear form inputs
+                        if (productInput) productInput.value = '';
+                        if (targetPriceInput) targetPriceInput.value = '';
+                        
                         toast({
                           title: "Price Alert Created",
-                          description: "You'll be notified when the price condition is met",
+                          description: `Alert set for ${productName} at ₹${targetPrice}`,
                         });
                       }}>
                         Create Alert

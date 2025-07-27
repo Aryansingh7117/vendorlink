@@ -58,9 +58,10 @@ export default function GroupOrders() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  const { data: groupOrders = [], isLoading: groupOrdersLoading } = useQuery<GroupOrder[]>({
+  const { data: groupOrders = [], isLoading: groupOrdersLoading, refetch: refetchGroupOrders } = useQuery<GroupOrder[]>({
     queryKey: ["/api/group-orders"],
     enabled: isAuthenticated,
+    refetchInterval: 5000, // Auto-refresh every 5 seconds for live updates
   });
 
   const { data: products = [] } = useQuery<Product[]>({

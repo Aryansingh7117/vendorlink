@@ -157,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             quantity: item.quantity,
             pricePerUnit: item.price.toString(),
             totalAmount: (item.price * item.quantity).toString(),
-            supplierId: item.supplierId || 1,
+            supplierId: item.supplierId || userId,
             supplierName: item.supplierName || "Default Supplier",
             status: status,
             orderDate: new Date().toISOString()
