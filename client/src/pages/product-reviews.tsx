@@ -26,6 +26,8 @@ export default function ProductReviews() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showReviewDialog, setShowReviewDialog] = useState(false);
+  const [showReplyDialog, setShowReplyDialog] = useState(false);
+  const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
   
   const reviewForm = useForm({
     resolver: zodResolver(reviewSchema),
@@ -38,7 +40,7 @@ export default function ProductReviews() {
   });
 
   // Sample reviews data
-  const [reviews] = useState([
+  const [reviews, setReviews] = useState([
     {
       id: "1",
       product: { name: "Premium Basmati Rice", id: "prod-1" },
@@ -95,8 +97,37 @@ export default function ProductReviews() {
       description: "Thank you for sharing your experience. Your review helps other vendors make better decisions.",
     });
 
+    setReviews([newReview, ...reviews]);
     setShowReviewDialog(false);
     reviewForm.reset();
+  };
+
+  const handleHelpfulClick = (reviewId: string) => {
+    setReviews(reviews.map(review => 
+      review.id === reviewId 
+        ? { ...review, helpfulCount: review.helpfulCount + 1 }
+        : review
+    ));
+    
+    toast({
+      title: "Thank you!",
+      description: "Your feedback helps other vendors find quality suppliers.",
+    });
+  };
+
+  const handleReplyClick = (reviewId: string) => {
+    setSelectedReviewId(reviewId);
+    setShowReplyDialog(true);
+  };
+
+  const handleReplySubmit = (replyText: string) => {
+    toast({
+      title: "Reply Posted!",
+      description: "Your reply has been added to the review discussion.",
+    });
+    
+    setShowReplyDialog(false);
+    setSelectedReviewId(null);
   };
 
   const renderStars = (rating: number) => {
@@ -258,11 +289,21 @@ export default function ProductReviews() {
                   <CardContent>
                     <p className="text-slate-700 dark:text-gray-300 mb-4">{review.comment}</p>
                     <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-gray-600">
-                      <Button variant="ghost" size="sm" className="text-slate-500 dark:text-gray-400">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-slate-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                        onClick={() => handleHelpfulClick(review.id)}
+                      >
                         <ThumbsUp className="h-4 w-4 mr-1" />
                         Helpful ({review.helpfulCount})
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-slate-500 dark:text-gray-400">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-slate-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400"
+                        onClick={() => handleReplyClick(review.id)}
+                      >
                         <MessageSquare className="h-4 w-4 mr-1" />
                         Reply
                       </Button>
@@ -288,6 +329,35 @@ export default function ProductReviews() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Reply Dialog */}
+            <Dialog open={showReplyDialog} onOpenChange={setShowReplyDialog}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Reply to Review</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <Textarea 
+                    placeholder="Share your thoughts or ask a question about this review..."
+                    className="min-h-[100px]"
+                    id="reply-text"
+                  />
+                  <div className="flex justify-end space-x-2">
+                    <Button type="button" variant="outline" onClick={() => setShowReplyDialog(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={() => {
+                      const replyText = (document.getElementById('reply-text') as HTMLTextAreaElement)?.value;
+                      if (replyText?.trim()) {
+                        handleReplySubmit(replyText);
+                      }
+                    }}>
+                      Post Reply
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </main>
       </div>
