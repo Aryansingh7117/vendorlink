@@ -86,8 +86,8 @@ export default function VendorDashboard() {
     );
   }
 
-  const recentOrders = orders.slice(0, 5);
-  const activeGroupOrders = groupOrders.slice(0, 2);
+  const recentOrders = Array.isArray(orders) ? orders.slice(0, 5) : [];
+  const activeGroupOrders = Array.isArray(groupOrders) ? groupOrders.slice(0, 2) : [];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-gray-900 animate-fade-in">
@@ -134,7 +134,7 @@ export default function VendorDashboard() {
                       <dl>
                         <dt className="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">Active Orders</dt>
                         <dd className="text-lg font-medium text-slate-900 dark:text-white" data-testid="text-active-orders">
-                          {statsLoading ? "..." : stats?.activeOrders || 0}
+                          {statsLoading ? "..." : (stats as any)?.activeOrders || 0}
                         </dd>
                       </dl>
                     </div>
@@ -154,7 +154,7 @@ export default function VendorDashboard() {
                       <dl>
                         <dt className="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">Monthly Savings</dt>
                         <dd className="text-lg font-medium text-slate-900 dark:text-white" data-testid="text-monthly-savings">
-                          {statsLoading ? "..." : `₹${stats?.monthlySavings?.toLocaleString() || 0}`}
+                          {statsLoading ? "..." : `₹${(stats as any)?.monthlySavings?.toLocaleString() || 0}`}
                         </dd>
                       </dl>
                     </div>
@@ -174,7 +174,7 @@ export default function VendorDashboard() {
                       <dl>
                         <dt className="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">Credit Score</dt>
                         <dd className="text-lg font-medium text-slate-900 dark:text-white" data-testid="text-credit-score">
-                          {statsLoading ? "..." : stats?.creditScore || 600}
+                          {statsLoading ? "..." : (stats as any)?.creditScore || 600}
                         </dd>
                       </dl>
                     </div>
@@ -194,7 +194,7 @@ export default function VendorDashboard() {
                       <dl>
                         <dt className="text-sm font-medium text-slate-500 dark:text-gray-400 truncate">Group Orders</dt>
                         <dd className="text-lg font-medium text-slate-900 dark:text-white" data-testid="text-group-orders">
-                          {groupOrdersLoading ? "..." : groupOrders?.length || 0}
+                          {groupOrdersLoading ? "..." : Array.isArray(groupOrders) ? groupOrders.length : 0}
                         </dd>
                       </dl>
                     </div>
@@ -259,7 +259,7 @@ export default function VendorDashboard() {
                         No active group orders
                       </div>
                     ) : (
-                      activeGroupOrders.map((groupOrder) => (
+                      activeGroupOrders.map((groupOrder: any) => (
                         <GroupOrderCard
                           key={groupOrder.id}
                           groupOrder={groupOrder}

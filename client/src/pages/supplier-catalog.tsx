@@ -79,6 +79,26 @@ export default function SupplierCatalog() {
     }
   ];
 
+  // Filter and sort products
+  const filteredProducts = products
+    .filter(product => 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'price-low':
+          return a.price - b.price;
+        case 'price-high':
+          return b.price - a.price;
+        case 'category':
+          return a.category.localeCompare(b.category);
+        case 'name':
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
+
   const handleAddToCart = (product: any) => {
     const existingCart = JSON.parse(localStorage.getItem('vendorlink_cart') || '[]');
     const cartItem = {
