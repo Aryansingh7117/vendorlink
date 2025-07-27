@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Bell, TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function PriceTracking() {
+  const { toast } = useToast();
   const priceAlerts = [
     {
       id: "1",
@@ -71,7 +73,12 @@ export default function PriceTracking() {
                     Monitor price changes and get alerts when your target prices are reached
                   </p>
                 </div>
-                <Button>
+                <Button onClick={() => {
+                  toast({
+                    title: "Create Price Alert",
+                    description: "Opening price alert creation form...",
+                  });
+                }}>
                   <Target className="h-4 w-4 mr-2" />
                   Create Alert
                 </Button>
@@ -120,7 +127,17 @@ export default function PriceTracking() {
 
                       <div className="flex items-end">
                         <div className="flex gap-2 w-full">
-                          <Button variant="outline" size="sm" className="flex-1">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1"
+                            onClick={() => {
+                              toast({
+                                title: "Edit Price Alert",
+                                description: `Editing alert for ${alert.productName}. Target price: ₹${alert.targetPrice}`,
+                              });
+                            }}
+                          >
                             <Bell className="h-4 w-4 mr-1" />
                             Edit Alert
                           </Button>

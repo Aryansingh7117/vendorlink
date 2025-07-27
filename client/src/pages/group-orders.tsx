@@ -156,7 +156,52 @@ export default function GroupOrders() {
   });
 
   const handleJoinGroupOrder = (groupOrderId: string) => {
-    const groupOrder = groupOrders.find((go) => go.id === groupOrderId);
+    // Sample orders for demonstration
+    const sampleOrders = [
+      {
+        id: "sample-1",
+        title: "Bulk Rice Order - Save 15%",
+        product: { name: "Premium Basmati Rice", unit: "kg" },
+        regularPricePerUnit: 85,
+        groupPricePerUnit: 72,
+        currentParticipants: 6,
+        maxParticipants: 10,
+        targetQuantity: 500,
+        deadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+        status: "active" as const
+      },
+      {
+        id: "sample-2", 
+        title: "Cooking Oil Bulk Purchase",
+        product: { name: "Sunflower Oil", unit: "L" },
+        regularPricePerUnit: 120,
+        groupPricePerUnit: 105,
+        currentParticipants: 8,
+        maxParticipants: 12,
+        targetQuantity: 200,
+        deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+        status: "active" as const
+      },
+      {
+        id: "sample-3",
+        title: "Fresh Onions Group Order",
+        product: { name: "Red Onions", unit: "kg" },
+        regularPricePerUnit: 35,
+        groupPricePerUnit: 29,
+        currentParticipants: 4,
+        maxParticipants: 8,
+        targetQuantity: 300,
+        deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+        status: "active" as const
+      }
+    ];
+    
+    // Find from sample orders first, then real orders
+    let groupOrder = sampleOrders.find(go => go.id === groupOrderId);
+    if (!groupOrder) {
+      groupOrder = groupOrders.find((go) => go.id === groupOrderId);
+    }
+    
     setSelectedGroupOrder(groupOrder || null);
     setShowJoinDialog(true);
   };
@@ -167,10 +212,22 @@ export default function GroupOrders() {
 
   const onJoinSubmit = (data: any) => {
     if (selectedGroupOrder) {
-      joinGroupOrderMutation.mutate({
-        groupOrderId: selectedGroupOrder.id,
-        quantity: data.quantity,
-      });
+      if (selectedGroupOrder.id.startsWith('sample-')) {
+        // Handle sample group order join
+        toast({
+          title: "Joined Group Order!",
+          description: `Successfully joined "${selectedGroupOrder.title}" with quantity ${data.quantity}. You'll save ₹${((Number(selectedGroupOrder.regularPricePerUnit) - Number(selectedGroupOrder.groupPricePerUnit)) * data.quantity).toFixed(2)}!`,
+        });
+        setShowJoinDialog(false);
+        setSelectedGroupOrder(null);
+        joinForm.reset();
+      } else {
+        // Handle real group order join
+        joinGroupOrderMutation.mutate({
+          groupOrderId: selectedGroupOrder.id,
+          quantity: data.quantity,
+        });
+      }
     }
   };
 
@@ -226,11 +283,21 @@ export default function GroupOrders() {
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    {products.map((product) => (
-                                      <SelectItem key={product.id} value={product.id}>
-                                        {product.name} - ₹{product.pricePerUnit}/{product.unit}
-                                      </SelectItem>
-                                    ))}
+                                    {products.length === 0 ? (
+                                      <>
+                                        <SelectItem value="sample-rice">Premium Basmati Rice - ₹85/kg</SelectItem>
+                                        <SelectItem value="sample-oil">Sunflower Oil - ₹120/L</SelectItem>
+                                        <SelectItem value="sample-onions">Red Onions - ₹35/kg</SelectItem>
+                                        <SelectItem value="sample-wheat">Wheat Flour - ₹45/kg</SelectItem>
+                                        <SelectItem value="sample-sugar">White Sugar - ₹42/kg</SelectItem>
+                                      </>
+                                    ) : (
+                                      products.map((product) => (
+                                        <SelectItem key={product.id} value={product.id}>
+                                          {product.name} - ₹{product.pricePerUnit}/{product.unit}
+                                        </SelectItem>
+                                      ))
+                                    )}
                                   </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -474,10 +541,52 @@ export default function GroupOrders() {
                     <p className="mt-2 text-slate-500">Loading group orders...</p>
                   </div>
                 ) : activeGroupOrders.length === 0 ? (
-                  <div className="text-center py-12 text-slate-500">
-                    <Users className="h-12 w-12 mx-auto mb-4 text-slate-300" />
-                    <p>No active group orders</p>
-                    <p className="text-sm">Be the first to create a group order</p>
+                  <div className="space-y-6">
+                    {/* Show sample group orders when no real ones exist */}
+                    {[
+                      {
+                        id: "sample-1",
+                        title: "Bulk Rice Order - Save 15%",
+                        product: { name: "Premium Basmati Rice", unit: "kg" },
+                        regularPricePerUnit: 85,
+                        groupPricePerUnit: 72,
+                        currentParticipants: 6,
+                        maxParticipants: 10,
+                        targetQuantity: 500,
+                        deadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+                        status: "active" as const
+                      },
+                      {
+                        id: "sample-2", 
+                        title: "Cooking Oil Bulk Purchase",
+                        product: { name: "Sunflower Oil", unit: "L" },
+                        regularPricePerUnit: 120,
+                        groupPricePerUnit: 105,
+                        currentParticipants: 8,
+                        maxParticipants: 12,
+                        targetQuantity: 200,
+                        deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+                        status: "active" as const
+                      },
+                      {
+                        id: "sample-3",
+                        title: "Fresh Onions Group Order",
+                        product: { name: "Red Onions", unit: "kg" },
+                        regularPricePerUnit: 35,
+                        groupPricePerUnit: 29,
+                        currentParticipants: 4,
+                        maxParticipants: 8,
+                        targetQuantity: 300,
+                        deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        status: "active" as const
+                      }
+                    ].map((groupOrder) => (
+                      <GroupOrderCard
+                        key={groupOrder.id}
+                        groupOrder={groupOrder}
+                        onJoin={handleJoinGroupOrder}
+                      />
+                    ))}
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

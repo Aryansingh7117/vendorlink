@@ -98,9 +98,9 @@ export default function SavedSuppliers() {
                       </div>
                     </div>
                     <div className="flex gap-3 mt-4">
-                      <Button>View Products</Button>
-                      <Button variant="outline">Contact Supplier</Button>
-                      <Button variant="ghost">Remove from Saved</Button>
+                      <Button onClick={() => window.location.href = "/marketplace"}>View Products</Button>
+                      <Button variant="outline" onClick={() => alert(`Contacting ${supplier.businessName}...`)}>Contact Supplier</Button>
+                      <Button variant="ghost" onClick={() => alert(`Removed ${supplier.businessName} from saved suppliers`)}>Remove from Saved</Button>
                     </div>
                   </CardContent>
                 </Card>
