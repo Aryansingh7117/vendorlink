@@ -240,7 +240,7 @@ export default function GroupOrders() {
   const myGroupOrders = groupOrders.filter((go) => go.organizerId === user?.id);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
       <Navigation />
       <div className="flex">
         <Sidebar />
@@ -250,10 +250,10 @@ export default function GroupOrders() {
             <div className="mb-8">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900" data-testid="text-group-orders-title">
+                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white" data-testid="text-group-orders-title">
                     Group Orders
                   </h1>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <p className="mt-1 text-sm text-slate-600 dark:text-gray-300">
                     Join bulk purchases for better prices and cost savings
                   </p>
                 </div>

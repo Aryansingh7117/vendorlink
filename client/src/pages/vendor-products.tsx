@@ -134,7 +134,7 @@ export default function VendorProducts() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
       <Navigation />
       <div className="flex">
         <Sidebar userRole="vendor" />
@@ -143,8 +143,8 @@ export default function VendorProducts() {
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900">My Product Listings</h1>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white">My Product Listings</h1>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-gray-300">
                     List your products for suppliers to discover and quote
                   </p>
                 </div>

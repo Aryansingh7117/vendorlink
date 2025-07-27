@@ -138,6 +138,33 @@ export const reviews = pgTable("reviews", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Product reviews table
+export const productReviews = pgTable("product_reviews", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull().references(() => products.id),
+  vendorId: varchar("vendor_id").notNull().references(() => users.id),
+  supplierId: varchar("supplier_id").notNull().references(() => users.id),
+  rating: integer("rating").notNull(), // 1-5
+  comment: text("comment"),
+  helpfulCount: integer("helpful_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Support tickets table
+export const supportTickets = pgTable("support_tickets", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  subject: varchar("subject").notNull(),
+  description: text("description").notNull(),
+  priority: varchar("priority").notNull().default('medium'), // low, medium, high, urgent
+  status: varchar("status").notNull().default('open'), // open, in_progress, resolved, closed
+  category: varchar("category").notNull(), // technical, billing, general, feedback
+  assignedTo: varchar("assigned_to"),
+  resolution: text("resolution"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Price alerts table
 export const priceAlerts = pgTable("price_alerts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

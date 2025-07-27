@@ -53,6 +53,7 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
     { icon: MessageCircle, label: "Customer Support", href: "/customer-support" },
     { icon: Send, label: "Send Feedback", href: "/feedback" },
     { icon: Truck, label: "Track Delivery", href: "/delivery-tracking" },
+    { icon: Star, label: "Product Reviews", href: "/product-reviews" },
   ];
 
   const NavSection = ({ title, items }: { title: string; items: typeof vendorNavItems }) => (

@@ -7,6 +7,8 @@ import {
   groupOrderParticipants,
   reviews,
   priceAlerts,
+  productReviews,
+  supportTickets,
   type User,
   type UpsertUser,
   type Product,
@@ -23,6 +25,10 @@ import {
   type InsertReview,
   type PriceAlert,
   type InsertPriceAlert,
+  type ProductReview,
+  type InsertProductReview,
+  type SupportTicket,
+  type InsertSupportTicket,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, sql, like, gte, lte } from "drizzle-orm";
@@ -74,6 +80,15 @@ export interface IStorage {
   // Price alert operations
   getPriceAlerts(vendorId: string): Promise<PriceAlert[]>;
   createPriceAlert(priceAlert: InsertPriceAlert): Promise<PriceAlert>;
+  
+  // Product review operations
+  getProductReviews(productId: string): Promise<ProductReview[]>;
+  createProductReview(review: InsertProductReview): Promise<ProductReview>;
+  
+  // Support ticket operations
+  createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket>;
+  getUserSupportTickets(userId: string): Promise<SupportTicket[]>;
+  updateSupportTicketStatus(id: string, status: string): Promise<SupportTicket>;
   
   // Analytics
   getVendorStats(vendorId: string): Promise<{

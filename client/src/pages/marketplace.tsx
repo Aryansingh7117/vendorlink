@@ -18,6 +18,7 @@ export default function Marketplace() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("name");
   const [priceRange, setPriceRange] = useState<{ min: string; max: string }>({ min: "", max: "" });
 
   const { data: categories = [] } = useQuery<Category[]>({
@@ -41,13 +42,13 @@ export default function Marketplace() {
 
   // Combine API products with vendor listings from localStorage
   const vendorListings = JSON.parse(localStorage.getItem('vendor_listings') || '[]');
-  const products = [
+  let products = [
     ...apiProducts,
     ...vendorListings.map((listing: any) => ({
       id: listing.id,
       name: listing.name,
       description: listing.description,
-      supplier: { businessName: "Various Suppliers" },
+      supplier: { businessName: "Various Suppliers", rating: 4.2 },
       category: { name: listing.category },
       pricePerUnit: listing.price,
       unit: listing.unit,
@@ -55,6 +56,23 @@ export default function Marketplace() {
       availableQuantity: listing.stock
     }))
   ];
+
+  // Sort products based on sortBy value
+  products = products.sort((a, b) => {
+    switch (sortBy) {
+      case 'price-low':
+        return parseFloat(a.pricePerUnit.toString()) - parseFloat(b.pricePerUnit.toString());
+      case 'price-high':
+        return parseFloat(b.pricePerUnit.toString()) - parseFloat(a.pricePerUnit.toString());
+      case 'rating':
+        return (b.supplier?.rating || 4.2) - (a.supplier?.rating || 4.2);
+      case 'quality':
+        return (b.supplier?.rating || 4.2) - (a.supplier?.rating || 4.2);
+      case 'name':
+      default:
+        return a.name.localeCompare(b.name);
+    }
+  });
 
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: { productId: string; quantity: number; supplierId: string }) => {
@@ -171,6 +189,19 @@ export default function Marketplace() {
                             {category.name}
                           </SelectItem>
                         ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="w-48" data-testid="select-sort">
+                        <SelectValue placeholder="Sort by..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="name">Name A-Z</SelectItem>
+                        <SelectItem value="price-low">Price: Low to High</SelectItem>
+                        <SelectItem value="price-high">Price: High to Low</SelectItem>
+                        <SelectItem value="rating">Rating: High to Low</SelectItem>
+                        <SelectItem value="quality">Quality Score</SelectItem>
                       </SelectContent>
                     </Select>
                     

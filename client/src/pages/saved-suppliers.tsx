@@ -138,9 +138,9 @@ export default function SavedSuppliers() {
                   <CardContent>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <div className="flex items-center text-sm text-slate-600">
+                        <div className="flex items-center text-sm text-slate-600 dark:text-gray-300">
                           <Star className="h-4 w-4 mr-2 text-yellow-500 fill-current" />
-                          {supplier.rating} ({supplier.reviewCount} reviews)
+                          {supplier.rating.toFixed(1)} ({supplier.reviewCount} reviews)
                         </div>
                         <div className="flex items-center text-sm text-slate-600">
                           <MapPin className="h-4 w-4 mr-2" />

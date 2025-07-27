@@ -24,6 +24,7 @@ import SupplierCatalog from "@/pages/supplier-catalog";
 import CustomerSupport from "@/pages/customer-support";
 import Feedback from "@/pages/feedback";
 import DeliveryTracking from "@/pages/delivery-tracking";
+import ProductReviews from "@/pages/product-reviews";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -52,6 +53,7 @@ function Router() {
           <Route path="/customer-support" component={CustomerSupport} />
           <Route path="/feedback" component={Feedback} />
           <Route path="/delivery-tracking" component={DeliveryTracking} />
+          <Route path="/product-reviews" component={ProductReviews} />
         </>
       )}
       <Route component={NotFound} />
