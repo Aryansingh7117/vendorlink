@@ -254,7 +254,18 @@ export default function VendorDashboard() {
                         toast({ title: "Reordering", description: `Reordering from order ${orderId}` });
                       }}
                       onCancelOrder={(orderId) => {
-                        toast({ title: "Cancelling order", description: `Cancelling order ${orderId}` });
+                        // Remove from localStorage demo orders
+                        const currentOrders = JSON.parse(localStorage.getItem('demo_orders') || '[]');
+                        const updatedOrders = currentOrders.filter((order: any) => order.id !== orderId);
+                        localStorage.setItem('demo_orders', JSON.stringify(updatedOrders));
+                        
+                        // Update local state immediately
+                        setDemoOrders(updatedOrders);
+                        
+                        // Trigger UI refresh
+                        window.dispatchEvent(new Event('ordersUpdated'));
+                        
+                        toast({ title: "Order Cancelled", description: `Order ${orderId} has been cancelled successfully` });
                       }}
                     />
                   </CardContent>

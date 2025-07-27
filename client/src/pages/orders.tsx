@@ -84,13 +84,48 @@ export default function Orders() {
   };
 
   const handleReorder = (orderId: string) => {
+    // Find the original order
+    const originalOrder = orders.find(order => order.id === orderId);
+    if (originalOrder) {
+      // Create a new order based on the original
+      const newOrder = {
+        ...originalOrder,
+        id: `order-${Math.random().toString(36).substr(2, 9)}`,
+        status: 'pending',
+        orderDate: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        deliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+        expectedDeliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+      };
+      
+      // Add to localStorage
+      const currentOrders = JSON.parse(localStorage.getItem('demo_orders') || '[]');
+      localStorage.setItem('demo_orders', JSON.stringify([...currentOrders, newOrder]));
+      
+      // Update local state and trigger refresh
+      const updatedOrders = [...demoOrders, newOrder];
+      setDemoOrders(updatedOrders);
+      window.dispatchEvent(new Event('ordersUpdated'));
+    }
+    
     toast({
-      title: "Reordering",
-      description: `Items from order ${orderId} have been added to your cart`,
+      title: "Order Reordered",
+      description: `New order created based on order ${orderId}`,
     });
   };
 
   const handleCancelOrder = (orderId: string) => {
+    // Remove from localStorage demo orders
+    const currentOrders = JSON.parse(localStorage.getItem('demo_orders') || '[]');
+    const updatedOrders = currentOrders.filter((order: any) => order.id !== orderId);
+    localStorage.setItem('demo_orders', JSON.stringify(updatedOrders));
+    
+    // Update local state immediately
+    setDemoOrders(updatedOrders);
+    
+    // Trigger UI refresh across all components
+    window.dispatchEvent(new Event('ordersUpdated'));
+    
     toast({
       title: "Order Cancelled",
       description: `Order ${orderId} has been cancelled successfully`,
