@@ -166,8 +166,12 @@ export function setupDevelopmentEnvironment(): void {
     console.log("   Using development session secret");
   }
   
+  // In development, if REPLIT_DOMAINS is not set, use localhost
+  // But if it's already set (like in Replit development), keep it
   if (!process.env.REPLIT_DOMAINS) {
     process.env.REPLIT_DOMAINS = "localhost:3000";
     console.log("   Using localhost development domain");
+  } else {
+    console.log(`   Using configured domain: ${process.env.REPLIT_DOMAINS}`);
   }
 }

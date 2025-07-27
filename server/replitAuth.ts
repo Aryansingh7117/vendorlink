@@ -246,10 +246,20 @@ export async function setupAuth(app: Express) {
     });
 
     app.get("/api/callback", (req, res, next) => {
+      console.log("=== OAUTH CALLBACK RECEIVED ===");
       const hostname = req.hostname;
       const strategyName = `replitauth:${hostname}`;
       
-      console.log(`Handling callback for hostname: ${hostname}, strategy: ${strategyName}`);
+      console.log(`Callback details:`);
+      console.log(`- Hostname: ${hostname}`);
+      console.log(`- Strategy name: ${strategyName}`);
+      console.log(`- Query parameters:`, req.query);
+      console.log(`- Headers:`, {
+        host: req.headers.host,
+        'user-agent': req.headers['user-agent']?.substring(0, 50) + '...',
+        referer: req.headers.referer
+      });
+      
       console.log(`Available strategies:`, Object.keys((passport as any)._strategies || {}));
       
       // Try to find a matching strategy or use the first available one
@@ -263,29 +273,30 @@ export async function setupAuth(app: Express) {
       }
       
       console.log(`Using callback strategy: ${matchingStrategy}`);
-      console.log("Callback request details:", {
-        query: req.query,
-        hostname: req.hostname,
-        method: req.method,
-        url: req.url
-      });
       
       passport.authenticate(matchingStrategy, (err: any, user: any, info: any) => {
+        console.log("=== PASSPORT AUTHENTICATE CALLBACK ===");
+        console.log("Authentication result:", {
+          hasError: !!err,
+          hasUser: !!user,
+          hasInfo: !!info
+        });
+        
         if (err) {
           console.error("Authentication error:", err);
+          console.error("Error type:", typeof err);
+          console.error("Error message:", err.message);
           return res.redirect("/api/login?error=auth_failed");
         }
         
         if (!user) {
-          console.error("Authentication failed - no user returned from strategy");
+          console.error("=== AUTHENTICATION FAILED - NO USER ===");
           console.error("Error details:", err);
           console.error("Info details:", info);
-          console.error("Request query:", req.query);
-          console.error("Request headers:", {
-            host: req.headers.host,
-            'user-agent': req.headers['user-agent'],
-            authorization: req.headers.authorization
-          });
+          console.error("Info type:", typeof info);
+          if (info && typeof info === 'object') {
+            console.error("Info keys:", Object.keys(info));
+          }
           return res.redirect("/api/login?error=no_user");
         }
         
