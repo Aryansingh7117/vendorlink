@@ -67,15 +67,31 @@ export default function VendorDashboard() {
     refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
   });
 
-  // Listen for cart updates to refresh dashboard
+  // State for demo orders from localStorage
+  const [demoOrders, setDemoOrders] = useState([]);
+
+  // Listen for cart updates and demo orders updates
   useEffect(() => {
     const handleCartUpdate = () => {
       refetchOrders();
       refetchGroupOrders();
     };
 
+    const handleOrdersUpdate = () => {
+      const storedOrders = JSON.parse(localStorage.getItem('demo_orders') || '[]');
+      setDemoOrders(storedOrders);
+      refetchOrders();
+    };
+
+    // Load demo orders on mount
+    handleOrdersUpdate();
+
     window.addEventListener('cartUpdated', handleCartUpdate);
-    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener('ordersUpdated', handleOrdersUpdate);
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('ordersUpdated', handleOrdersUpdate);
+    };
   }, [refetchOrders, refetchGroupOrders]);
 
   if (isLoading || pageLoading || !isAuthenticated) {
@@ -86,7 +102,9 @@ export default function VendorDashboard() {
     );
   }
 
-  const recentOrders = Array.isArray(orders) ? orders.slice(0, 5) : [];
+  // Combine API orders with demo orders for display
+  const allOrders = [...(Array.isArray(orders) ? orders : []), ...demoOrders];
+  const recentOrders = allOrders.slice(0, 5);
   const activeGroupOrders = Array.isArray(groupOrders) ? groupOrders.slice(0, 2) : [];
 
   return (

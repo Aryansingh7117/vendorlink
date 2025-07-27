@@ -9,7 +9,19 @@ import { Package, Search, Eye, RefreshCw, Star, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+interface Order {
+  id: string;
+  productName: string;
+  quantity: number;
+  totalAmount: string | number;
+  status: string;
+  supplier?: string;
+  supplierName?: string;
+  orderDate?: string;
+  deliveryDate?: string;
+}
 
 export default function Orders() {
   const { toast } = useToast();
@@ -17,10 +29,28 @@ export default function Orders() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: orders = [], isLoading, refetch } = useQuery({
+  const { data: apiOrders = [], isLoading, refetch } = useQuery<Order[]>({
     queryKey: ["/api/orders"],
     enabled: isAuthenticated,
   });
+
+  // State for demo orders from localStorage
+  const [demoOrders, setDemoOrders] = useState<Order[]>([]);
+
+  // Load demo orders and listen for updates
+  useEffect(() => {
+    const loadDemoOrders = () => {
+      const storedOrders = JSON.parse(localStorage.getItem('demo_orders') || '[]');
+      setDemoOrders(storedOrders);
+    };
+
+    loadDemoOrders();
+    window.addEventListener('ordersUpdated', loadDemoOrders);
+    return () => window.removeEventListener('ordersUpdated', loadDemoOrders);
+  }, []);
+
+  // Combine API orders with demo orders
+  const orders: Order[] = [...(Array.isArray(apiOrders) ? apiOrders : []), ...demoOrders];
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -35,11 +65,11 @@ export default function Orders() {
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
-  const filteredOrders = orders.filter(order => {
+  const filteredOrders = orders.filter((order: Order) => {
     const matchesStatus = statusFilter === "all" || order.status === statusFilter;
     const matchesSearch = !searchTerm || 
       order.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.supplierName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.supplierName || order.supplier)?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.id?.toString().includes(searchTerm);
     return matchesStatus && matchesSearch;
   });
@@ -191,7 +221,7 @@ export default function Orders() {
                             <div>
                               <p className="text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wide">Total Amount</p>
                               <p className="text-sm font-medium text-slate-900 dark:text-white">
-                                ₹{parseFloat(order.totalAmount || "0").toLocaleString()}
+                                ₹{parseFloat(String(order.totalAmount || "0")).toLocaleString()}
                               </p>
                             </div>
                             <div>
