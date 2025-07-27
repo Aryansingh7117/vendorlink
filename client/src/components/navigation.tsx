@@ -182,7 +182,11 @@ export default function Navigation() {
                       </Link>
                     </DropdownMenuItem>
                   )}
-
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings" data-testid="link-settings">
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}

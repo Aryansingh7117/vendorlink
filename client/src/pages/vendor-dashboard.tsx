@@ -134,13 +134,6 @@ export default function VendorDashboard() {
                     <Plus className="mr-2 h-4 w-4" />
                     Join Group Order
                   </Button>
-                  <Button 
-                    data-testid="button-find-suppliers"
-                    onClick={() => window.location.href = "/supplier-catalog"}
-                  >
-                    <Search className="mr-2 h-4 w-4" />
-                    Find Suppliers
-                  </Button>
                 </div>
               </div>
             </div>

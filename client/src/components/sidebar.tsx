@@ -46,6 +46,7 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
 
   const accountNavItems = [
     { icon: CreditCard, label: "Credit Score", href: "/credit-score" },
+    { icon: Settings, label: "Settings", href: "/settings" },
   ];
 
   const supportNavItems = [
