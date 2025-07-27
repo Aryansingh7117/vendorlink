@@ -171,6 +171,7 @@ export default function Cart() {
         }));
         
         localStorage.setItem('demo_orders', JSON.stringify([...existingOrders, ...newOrders]));
+        console.log('Cart: Stored orders in localStorage:', [...existingOrders, ...newOrders]); // Debug log
         
         // Immediately trigger UI updates
         window.dispatchEvent(new Event('ordersUpdated'));
@@ -218,6 +219,7 @@ export default function Cart() {
       }));
       
       localStorage.setItem('demo_orders', JSON.stringify([...existingOrders, ...newOrders]));
+      console.log('Cart: Created fallback orders:', [...existingOrders, ...newOrders]); // Debug log
       
       // Immediately trigger UI updates
       window.dispatchEvent(new Event('ordersUpdated'));

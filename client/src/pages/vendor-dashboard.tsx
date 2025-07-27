@@ -79,7 +79,7 @@ export default function VendorDashboard() {
 
     const handleOrdersUpdate = () => {
       const storedOrders = JSON.parse(localStorage.getItem('demo_orders') || '[]');
-      console.log('Loading demo orders:', storedOrders); // Debug log
+      console.log('Dashboard: Loading demo orders from localStorage:', storedOrders); // Debug log
       setDemoOrders(storedOrders);
       refetchOrders();
     };
@@ -105,7 +105,7 @@ export default function VendorDashboard() {
 
   // Combine API orders with demo orders for display
   const allOrders = [...(Array.isArray(orders) ? orders : []), ...demoOrders];
-  console.log('All orders for display:', allOrders); // Debug log
+  console.log('Dashboard: API orders:', orders, 'Demo orders:', demoOrders, 'All orders:', allOrders); // Debug log
   const recentOrders = allOrders.slice(0, 5);
   const activeGroupOrders = Array.isArray(groupOrders) ? groupOrders.slice(0, 2) : [];
 
