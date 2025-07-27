@@ -18,24 +18,15 @@
 ## 👥 Team
 
 - Aryan Singh – Frontend Developer  
-- [Sushank's Role] – [His Responsibility]
+- Sushank Singh – Database and Deployment
+- Shreeya Dave - Backend Developer
 
----
 
-## 📷 Screenshots
-
-> Add screenshots here (optional)
-
----
 
 ## 🤝 Feedback
 
 We welcome suggestions, feedback, and bug reports.  
-Create an issue or drop us a message on [your preferred channel].
 
 ---
 
-## 📜 License
-
-[MIT](https://choosealicense.com/licenses/mit/) — feel free to use, share, and build upon it!
 
