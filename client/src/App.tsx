@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useAuth } from "@/hooks/useAuth";
+
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useState, useEffect } from "react";
 import NotFound from "@/pages/not-found";
@@ -41,7 +41,6 @@ function LoadingScreen() {
 }
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
   const [pageLoading, setPageLoading] = useState(true);
 
   // Simulate page load time to prevent 404 flashing
@@ -52,41 +51,32 @@ function Router() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (isLoading || pageLoading) {
+  if (pageLoading) {
     return <LoadingScreen />;
   }
 
   return (
     <div className="animate-fade-in">
       <Switch>
-        {!isAuthenticated ? (
-          <>
-            <Route path="/" component={Landing} />
-            <Route path="/cart" component={Cart} />
-          </>
-        ) : (
-          <>
-            <Route path="/" component={VendorDashboard} />
-            <Route path="/vendor-dashboard" component={VendorDashboard} />
-            <Route path="/supplier-dashboard" component={SupplierDashboard} />
-            <Route path="/marketplace" component={Marketplace} />
-            <Route path="/group-orders" component={GroupOrders} />
-            <Route path="/orders" component={Orders} />
-            <Route path="/saved-suppliers" component={SavedSuppliers} />
-            <Route path="/price-tracking" component={PriceTracking} />
-            <Route path="/my-products" component={MyProducts} />
-            <Route path="/credit-score" component={CreditScore} />
-            <Route path="/settings" component={Settings} />
-            <Route path="/cart" component={Cart} />
-            <Route path="/supplier-products" component={SupplierProducts} />
-            <Route path="/vendor-products" component={VendorProducts} />
-            <Route path="/supplier-catalog/:supplierId" component={SupplierCatalog} />
-            <Route path="/customer-support" component={CustomerSupport} />
-            <Route path="/feedback" component={Feedback} />
-            <Route path="/delivery-tracking" component={DeliveryTracking} />
-            <Route path="/product-reviews" component={ProductReviews} />
-          </>
-        )}
+        <Route path="/" component={VendorDashboard} />
+        <Route path="/vendor-dashboard" component={VendorDashboard} />
+        <Route path="/supplier-dashboard" component={SupplierDashboard} />
+        <Route path="/marketplace" component={Marketplace} />
+        <Route path="/group-orders" component={GroupOrders} />
+        <Route path="/orders" component={Orders} />
+        <Route path="/saved-suppliers" component={SavedSuppliers} />
+        <Route path="/price-tracking" component={PriceTracking} />
+        <Route path="/my-products" component={MyProducts} />
+        <Route path="/credit-score" component={CreditScore} />
+        <Route path="/settings" component={Settings} />
+        <Route path="/cart" component={Cart} />
+        <Route path="/supplier-products" component={SupplierProducts} />
+        <Route path="/vendor-products" component={VendorProducts} />
+        <Route path="/supplier-catalog/:supplierId" component={SupplierCatalog} />
+        <Route path="/customer-support" component={CustomerSupport} />
+        <Route path="/feedback" component={Feedback} />
+        <Route path="/delivery-tracking" component={DeliveryTracking} />
+        <Route path="/product-reviews" component={ProductReviews} />
         <Route component={NotFound} />
       </Switch>
     </div>

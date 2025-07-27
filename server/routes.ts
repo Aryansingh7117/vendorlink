@@ -1,42 +1,36 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
-import { setupAuthTestRoutes } from "./authTest";
+// Authentication removed for deployment simplicity
 import { insertProductSchema, insertOrderSchema, insertGroupOrderSchema, insertGroupOrderParticipantSchema, insertReviewSchema, insertPriceAlertSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
-  
-  // Setup auth testing routes (for debugging)
-  setupAuthTestRoutes(app);
+  // Mock user data for demo purposes without authentication
+  const mockUser = {
+    id: "demo-user",
+    email: "demo@vendorlink.com", 
+    name: "Demo User",
+    role: "both",
+    credits: 2500
+  };
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
+  // Mock auth routes
+  app.get('/api/auth/user', async (req: any, res) => {
+    res.json(mockUser);
   });
 
   // User role update
-  app.patch('/api/user/role', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/user/role', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
       const { role } = req.body;
       
       if (!['vendor', 'supplier', 'both'].includes(role)) {
         return res.status(400).json({ message: "Invalid role" });
       }
 
-      const user = await storage.updateUserRole(userId, role);
-      res.json(user);
+      const updatedUser = { ...mockUser, role };
+      res.json(updatedUser);
     } catch (error) {
       console.error("Error updating user role:", error);
       res.status(500).json({ message: "Failed to update user role" });
@@ -74,14 +68,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/products', isAuthenticated, async (req: any, res) => {
+  app.post('/api/products', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (!user || (user.role !== 'supplier' && user.role !== 'both')) {
-        return res.status(403).json({ message: "Only suppliers can create products" });
-      }
+      const userId = "demo-user"; // Use demo user for non-auth version
 
       const productData = insertProductSchema.parse({
         ...req.body,
@@ -99,16 +88,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/products/:id/stock', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/products/:id/stock', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
       const { id } = req.params;
       const { quantity } = req.body;
-
-      const product = await storage.getProduct(id);
-      if (!product || product.supplierId !== userId) {
-        return res.status(404).json({ message: "Product not found" });
-      }
 
       const updatedProduct = await storage.updateProductStock(id, quantity);
       res.json(updatedProduct);
@@ -119,9 +102,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Orders
-  app.get('/api/orders', isAuthenticated, async (req: any, res) => {
+  app.get('/api/orders', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "demo-user"; // Use demo user for non-auth version
       const { type } = req.query; // 'vendor' or 'supplier'
 
       const filters: any = {};
@@ -144,9 +127,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/orders', isAuthenticated, async (req: any, res) => {
+  app.post('/api/orders', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "demo-user"; // Use demo user for non-auth version
       const { items, totalAmount, status = "pending" } = req.body;
 
       // Handle cart with multiple items - create separate orders for each item
@@ -199,9 +182,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/orders/:id/status', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/orders/:id/status', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "demo-user";
       const { id } = req.params;
       const { status } = req.body;
 
@@ -229,9 +212,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/group-orders', isAuthenticated, async (req: any, res) => {
+  app.post('/api/group-orders', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "demo-user";
       const groupOrderData = insertGroupOrderSchema.parse({
         ...req.body,
         organizerId: userId,
@@ -248,9 +231,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/group-orders/:id/join', isAuthenticated, async (req: any, res) => {
+  app.post('/api/group-orders/:id/join', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "demo-user";
       const { id } = req.params;
       const { quantity } = req.body;
 
@@ -272,9 +255,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Reviews
-  app.post('/api/reviews', isAuthenticated, async (req: any, res) => {
+  app.post('/api/reviews', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "demo-user";
       const reviewData = insertReviewSchema.parse({
         ...req.body,
         vendorId: userId,
@@ -292,9 +275,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Price Alerts
-  app.get('/api/price-alerts', isAuthenticated, async (req: any, res) => {
+  app.get('/api/price-alerts', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "demo-user";
       const priceAlerts = await storage.getPriceAlerts(userId);
       res.json(priceAlerts);
     } catch (error) {
@@ -303,9 +286,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/price-alerts', isAuthenticated, async (req: any, res) => {
+  app.post('/api/price-alerts', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "demo-user";
       const alertData = insertPriceAlertSchema.parse({
         ...req.body,
         vendorId: userId,
@@ -323,9 +306,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Analytics
-  app.get('/api/stats/vendor', isAuthenticated, async (req: any, res) => {
+  app.get('/api/stats/vendor', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "demo-user";
       const stats = await storage.getVendorStats(userId);
       res.json(stats);
     } catch (error) {
@@ -334,9 +317,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/stats/supplier', isAuthenticated, async (req: any, res) => {
+  app.get('/api/stats/supplier', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "demo-user";
       const stats = await storage.getSupplierStats(userId);
       res.json(stats);
     } catch (error) {
