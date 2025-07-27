@@ -9,6 +9,7 @@ import { Minus, Plus, Trash2, ShoppingBag, Package, Truck, LogIn } from "lucide-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { queryClient } from "@/lib/queryClient";
 
 interface CartItem {
   id: string;
@@ -141,10 +142,17 @@ export default function Cart() {
       });
 
       if (response.ok) {
+        const orderResult = await response.json();
+        const orderId = `VL${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+        const trackingNumber = `TRK${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+        
         toast({
-          title: "Order Placed Successfully!",
-          description: `Your order for ₹${total.toFixed(2)} has been confirmed. You'll receive updates via email.`,
+          title: "Order Successfully Placed!",
+          description: `Order ID: ${orderId} | Tracking: ${trackingNumber} | Amount: ₹${total.toFixed(2)}`,
         });
+
+        // Invalidate orders query to refresh the orders list
+        queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
         
         // Clear cart after successful order
         setTimeout(() => {

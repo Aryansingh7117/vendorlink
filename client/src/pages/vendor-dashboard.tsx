@@ -108,11 +108,18 @@ export default function VendorDashboard() {
                   </p>
                 </div>
                 <div className="mt-4 lg:mt-0 flex flex-col sm:flex-row gap-3">
-                  <Button variant="outline" data-testid="button-join-group-order">
+                  <Button 
+                    variant="outline" 
+                    data-testid="button-join-group-order"
+                    onClick={() => window.location.href = "/group-orders"}
+                  >
                     <Plus className="mr-2 h-4 w-4" />
                     Join Group Order
                   </Button>
-                  <Button data-testid="button-find-suppliers">
+                  <Button 
+                    data-testid="button-find-suppliers"
+                    onClick={() => window.location.href = "/supplier-catalog"}
+                  >
                     <Search className="mr-2 h-4 w-4" />
                     Find Suppliers
                   </Button>
@@ -264,10 +271,7 @@ export default function VendorDashboard() {
                           key={groupOrder.id}
                           groupOrder={groupOrder}
                           onJoin={(groupOrderId) => {
-                            toast({ 
-                              title: "Joining group order", 
-                              description: `Joining group order ${groupOrderId}` 
-                            });
+                            window.location.href = "/group-orders";
                           }}
                         />
                       ))
