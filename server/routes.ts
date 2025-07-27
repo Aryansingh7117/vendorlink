@@ -28,15 +28,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
     
-    // Ensure mock category exists
+    // Ensure mock category exists (safe for all environments)
     try {
       await storage.createCategory({
         name: "Demo Products",
         description: "Demo category for marketplace products"
       });
     } catch (error) {
-      // Category might already exist
-      console.log("Mock category setup:", error);
+      // Category might already exist or database might not be available
+      console.log("Mock category setup (continuing in demo mode):", error);
     }
   } catch (error) {
     console.log("Demo user setup:", error);
