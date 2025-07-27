@@ -87,11 +87,27 @@ export default function VendorDashboard() {
     // Load demo orders on mount
     handleOrdersUpdate();
 
+    // Listen to multiple event types for robust order updates
     window.addEventListener('cartUpdated', handleCartUpdate);
     window.addEventListener('ordersUpdated', handleOrdersUpdate);
+    window.addEventListener('storage', handleOrdersUpdate);
+    
+    // Also check for orders on focus/visibility change for deployed version
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        handleOrdersUpdate();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleOrdersUpdate);
+    
     return () => {
       window.removeEventListener('cartUpdated', handleCartUpdate);
       window.removeEventListener('ordersUpdated', handleOrdersUpdate);
+      window.removeEventListener('storage', handleOrdersUpdate);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleOrdersUpdate);
     };
   }, [refetchOrders, refetchGroupOrders]);
 

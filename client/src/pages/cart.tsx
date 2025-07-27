@@ -175,8 +175,14 @@ export default function Cart() {
           expectedDeliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
         }));
         
-        localStorage.setItem('demo_orders', JSON.stringify([...existingOrders, ...newOrders]));
-        console.log('Cart: Stored orders in localStorage:', [...existingOrders, ...newOrders]); // Debug log
+        const allOrders = [...existingOrders, ...newOrders];
+        localStorage.setItem('demo_orders', JSON.stringify(allOrders));
+        console.log('Cart: Stored orders in localStorage:', allOrders); // Debug log
+        
+        // Force a manual localStorage update check for deployed version
+        setTimeout(() => {
+          localStorage.setItem('demo_orders', JSON.stringify(allOrders));
+        }, 50);
         
         // Immediately trigger UI updates
         window.dispatchEvent(new Event('ordersUpdated'));
@@ -184,13 +190,24 @@ export default function Cart() {
           window.dispatchEvent(new Event('ordersUpdated'));
         }, 100);
         
-        // Always clear cart and ensure UI updates
+        // Clear cart immediately after successful order
+        setCartItems([]);
+        localStorage.removeItem('vendorlink_cart');
+        window.dispatchEvent(new Event('cartUpdated'));
+        
+        // Multiple update triggers for deployed environment
+        window.dispatchEvent(new Event('ordersUpdated'));
         setTimeout(() => {
-          setCartItems([]);
-          localStorage.removeItem('vendorlink_cart');
-          window.dispatchEvent(new Event('cartUpdated'));
           window.dispatchEvent(new Event('ordersUpdated'));
-        }, 2000);
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: 'demo_orders',
+            newValue: localStorage.getItem('demo_orders'),
+            url: window.location.href
+          }));
+        }, 100);
+        setTimeout(() => {
+          window.dispatchEvent(new Event('ordersUpdated'));
+        }, 500);
       } else {
         console.log('Cart: Server returned error status, proceeding with fallback');
         // Still proceed with local order creation
@@ -225,14 +242,33 @@ export default function Cart() {
         expectedDeliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
       }));
       
-      localStorage.setItem('demo_orders', JSON.stringify([...existingOrders, ...newOrders]));
-      console.log('Cart: Created fallback orders:', [...existingOrders, ...newOrders]); // Debug log
+      const allFallbackOrders = [...existingOrders, ...newOrders];
+      localStorage.setItem('demo_orders', JSON.stringify(allFallbackOrders));
+      console.log('Cart: Created fallback orders:', allFallbackOrders); // Debug log
       
-      // Immediately trigger UI updates
+      // Double-ensure storage for deployed version
+      setTimeout(() => {
+        localStorage.setItem('demo_orders', JSON.stringify(allFallbackOrders));
+      }, 50);
+      
+      // Immediate and delayed UI updates for deployment
       window.dispatchEvent(new Event('ordersUpdated'));
-      window.setTimeout(() => {
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'demo_orders',
+        newValue: localStorage.getItem('demo_orders'),
+        url: window.location.href
+      }));
+      
+      // Multiple triggers to ensure deployed version updates
+      setTimeout(() => {
         window.dispatchEvent(new Event('ordersUpdated'));
-      }, 100);
+      }, 50);
+      setTimeout(() => {
+        window.dispatchEvent(new Event('ordersUpdated'));
+      }, 200);
+      setTimeout(() => {
+        window.dispatchEvent(new Event('ordersUpdated'));
+      }, 500);
       
       // Clear cart
       setTimeout(() => {

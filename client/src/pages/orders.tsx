@@ -37,7 +37,7 @@ export default function Orders() {
   // State for demo orders from localStorage
   const [demoOrders, setDemoOrders] = useState<Order[]>([]);
 
-  // Load demo orders and listen for updates
+  // Load demo orders and listen for updates (enhanced for deployed version)
   useEffect(() => {
     const loadDemoOrders = () => {
       const storedOrders = JSON.parse(localStorage.getItem('demo_orders') || '[]');
@@ -46,8 +46,21 @@ export default function Orders() {
     };
 
     loadDemoOrders();
+    
+    // Multiple event listeners for robust deployed functionality
     window.addEventListener('ordersUpdated', loadDemoOrders);
-    return () => window.removeEventListener('ordersUpdated', loadDemoOrders);
+    window.addEventListener('storage', loadDemoOrders);
+    window.addEventListener('focus', loadDemoOrders);
+    
+    // Also check periodically for deployed version
+    const interval = setInterval(loadDemoOrders, 2000);
+    
+    return () => {
+      window.removeEventListener('ordersUpdated', loadDemoOrders);
+      window.removeEventListener('storage', loadDemoOrders);
+      window.removeEventListener('focus', loadDemoOrders);
+      clearInterval(interval);
+    };
   }, []);
 
   // Combine API orders with demo orders
