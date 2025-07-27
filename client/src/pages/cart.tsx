@@ -24,7 +24,7 @@ interface CartItem {
 
 export default function Cart() {
   const { toast } = useToast();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // Load cart from localStorage on component mount
@@ -125,8 +125,8 @@ export default function Cart() {
           productName: item.name,
           quantity: item.quantity,
           price: item.price,
-          supplierId: item.supplierId || 1,
-          supplierName: item.supplierName || "Default Supplier"
+          supplierId: 1,
+          supplierName: item.supplier || "Default Supplier"
         })),
         totalAmount: total,
         status: "pending"
