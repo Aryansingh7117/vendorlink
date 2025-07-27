@@ -57,6 +57,23 @@ export default function Marketplace() {
     }))
   ];
 
+  // Filter products based on search criteria
+  products = products.filter(product => {
+    const matchesSearch = !searchTerm || 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.supplier?.businessName.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = selectedCategory === 'all' || 
+      product.category?.name === selectedCategory;
+    
+    const price = parseFloat(product.pricePerUnit.toString());
+    const matchesMinPrice = !priceRange.min || price >= parseFloat(priceRange.min);
+    const matchesMaxPrice = !priceRange.max || price <= parseFloat(priceRange.max);
+    
+    return matchesSearch && matchesCategory && matchesMinPrice && matchesMaxPrice;
+  });
+
   // Sort products based on sortBy value
   products = products.sort((a, b) => {
     switch (sortBy) {
@@ -307,7 +324,7 @@ export default function Marketplace() {
                           supplier: {
                             businessName: `Supplier ${product.id.slice(-1)}`,
                             isVerified: true,
-                            rating: 4.2 + Math.random() * 0.6,
+                            rating: parseFloat((4.2 + Math.random() * 0.6).toFixed(1)),
                             reviewCount: Math.floor(Math.random() * 150) + 50,
                           },
                           distance: Math.floor(Math.random() * 15) + 1,
@@ -326,7 +343,7 @@ export default function Marketplace() {
                           supplier: {
                             businessName: `Supplier ${product.id.slice(-4)}`,
                             isVerified: Math.random() > 0.3,
-                            rating: 4 + Math.random(),
+                            rating: parseFloat((4 + Math.random()).toFixed(1)),
                             reviewCount: Math.floor(Math.random() * 200) + 20,
                           },
                           distance: Math.floor(Math.random() * 15) + 1,

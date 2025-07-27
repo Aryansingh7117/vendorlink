@@ -50,7 +50,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
                   ))}
                 </div>
                 <span className="ml-2 text-xs text-slate-500" data-testid={`text-rating-${product.id}`}>
-                  {rating} ({reviewCount} reviews)
+                  {rating.toFixed(1)} ({reviewCount} reviews)
                 </span>
                 {product.supplier?.isVerified && (
                   <Badge variant="secondary" className="ml-3">

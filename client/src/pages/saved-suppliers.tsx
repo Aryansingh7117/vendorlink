@@ -6,10 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Heart, Star, MapPin, Phone, Mail, Search } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function SavedSuppliers() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<string>("name");
   const [savedSuppliers, setSavedSuppliers] = useState([
     {
       id: "1",
@@ -65,13 +67,30 @@ export default function SavedSuppliers() {
     );
   };
 
-  const filteredSuppliers = savedSuppliers.filter(supplier =>
+  let filteredSuppliers = savedSuppliers.filter(supplier =>
     supplier.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     supplier.specialties.some(specialty => 
       specialty.toLowerCase().includes(searchTerm.toLowerCase())
     ) ||
     supplier.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Apply sorting
+  filteredSuppliers = filteredSuppliers.sort((a, b) => {
+    switch (sortBy) {
+      case 'rating-high':
+        return b.rating - a.rating;
+      case 'rating-low':
+        return a.rating - b.rating;
+      case 'reviews':
+        return b.reviewCount - a.reviewCount;
+      case 'location':
+        return a.location.localeCompare(b.location);
+      case 'name':
+      default:
+        return a.businessName.localeCompare(b.businessName);
+    }
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
@@ -88,7 +107,7 @@ export default function SavedSuppliers() {
                     Discover and connect with verified suppliers
                   </p>
                 </div>
-                <div className="mt-4 lg:mt-0 lg:ml-6">
+                <div className="mt-4 lg:mt-0 lg:ml-6 flex gap-4">
                   <div className="relative">
                     <Input
                       type="text"
@@ -101,6 +120,18 @@ export default function SavedSuppliers() {
                       <Search className="h-4 w-4 text-slate-400" />
                     </div>
                   </div>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Sort by..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="name">Name A-Z</SelectItem>
+                      <SelectItem value="rating-high">Rating: High to Low</SelectItem>
+                      <SelectItem value="rating-low">Rating: Low to High</SelectItem>
+                      <SelectItem value="reviews">Most Reviews</SelectItem>
+                      <SelectItem value="location">Location</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
