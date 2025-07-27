@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Handshake, Bell, ChevronDown, ShoppingBag } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@shared/schema";
 
@@ -13,6 +13,38 @@ export default function Navigation() {
   const { user } = useAuth() as { user: User | null };
   const { toast } = useToast();
   const [notificationCount, setNotificationCount] = useState(3);
+  const [cartCount, setCartCount] = useState(0);
+
+  // Update cart count from localStorage
+  useEffect(() => {
+    const updateCartCount = () => {
+      const savedCart = localStorage.getItem('vendorlink_cart');
+      if (savedCart) {
+        try {
+          const parsedCart = JSON.parse(savedCart);
+          setCartCount(parsedCart.length);
+        } catch (error) {
+          setCartCount(0);
+        }
+      } else {
+        setCartCount(0);
+      }
+    };
+
+    // Initial load
+    updateCartCount();
+
+    // Listen for storage changes
+    window.addEventListener('storage', updateCartCount);
+    
+    // Custom event for same-tab updates
+    window.addEventListener('cartUpdated', updateCartCount);
+
+    return () => {
+      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
+  }, []);
 
   const handleNotificationClick = () => {
     toast({
@@ -82,12 +114,14 @@ export default function Navigation() {
               data-testid="button-cart"
             >
               <ShoppingBag className="h-5 w-5" />
-              <Badge 
-                variant="default" 
-                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-blue-500"
-              >
-                3
-              </Badge>
+              {cartCount > 0 && (
+                <Badge 
+                  variant="default" 
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-blue-500"
+                >
+                  {cartCount}
+                </Badge>
+              )}
             </Button>
             {user && (
               <DropdownMenu>

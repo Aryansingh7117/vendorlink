@@ -25,6 +25,7 @@ export default function Sidebar({ userRole = 'vendor' }: SidebarProps) {
     { icon: BarChart3, label: "Overview", href: "/vendor-dashboard" },
     { icon: ShoppingCart, label: "My Orders", href: "/orders" },
     { icon: Users, label: "Group Purchases", href: "/group-orders" },
+    { icon: Package, label: "My Listings", href: "/vendor-products" },
   ];
 
   const marketplaceNavItems = [

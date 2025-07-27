@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Minus, Plus, Trash2, ShoppingBag, Package, Truck } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CartItem {
@@ -23,38 +23,68 @@ interface CartItem {
 
 export default function Cart() {
   const { toast } = useToast();
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "Premium Basmati Rice",
-      supplier: "Fresh Farm Supplies",
-      price: 85,
-      unit: "kg",
-      quantity: 25,
-      minOrder: 10,
-      available: 500
-    },
-    {
-      id: "2",
-      name: "Pure Sunflower Oil",
-      supplier: "Global Trade Solutions",
-      price: 120,
-      unit: "L",
-      quantity: 15,
-      minOrder: 5,
-      available: 200
-    },
-    {
-      id: "3",
-      name: "Fresh Red Onions",
-      supplier: "Veggie World",
-      price: 35,
-      unit: "kg",
-      quantity: 50,
-      minOrder: 25,
-      available: 1000
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  // Load cart from localStorage on component mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem('vendorlink_cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        setCartItems(parsedCart);
+      } catch (error) {
+        console.error('Error loading cart:', error);
+        // Initialize with sample data if no cart exists
+        const sampleCart = [
+          {
+            id: "1",
+            name: "Premium Basmati Rice",
+            supplier: "Fresh Farm Supplies",
+            price: 85,
+            unit: "kg",
+            quantity: 25,
+            minOrder: 10,
+            available: 500
+          },
+          {
+            id: "2",
+            name: "Pure Sunflower Oil",
+            supplier: "Global Trade Solutions",
+            price: 120,
+            unit: "L",
+            quantity: 15,
+            minOrder: 5,
+            available: 200
+          }
+        ];
+        setCartItems(sampleCart);
+        localStorage.setItem('vendorlink_cart', JSON.stringify(sampleCart));
+      }
+    } else {
+      // Initialize with sample data if no cart exists
+      const sampleCart = [
+        {
+          id: "1",
+          name: "Premium Basmati Rice",
+          supplier: "Fresh Farm Supplies",
+          price: 85,
+          unit: "kg",
+          quantity: 25,
+          minOrder: 10,
+          available: 500
+        }
+      ];
+      setCartItems(sampleCart);
+      localStorage.setItem('vendorlink_cart', JSON.stringify(sampleCart));
     }
-  ]);
+  }, []);
+
+  // Save cart to localStorage whenever cart changes
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      localStorage.setItem('vendorlink_cart', JSON.stringify(cartItems));
+    }
+  }, [cartItems]);
 
   const updateQuantity = (id: string, newQuantity: number) => {
     setCartItems(items => 
@@ -90,6 +120,7 @@ export default function Cart() {
     // Clear cart after successful order
     setTimeout(() => {
       setCartItems([]);
+      localStorage.removeItem('vendorlink_cart');
     }, 2000);
   };
 

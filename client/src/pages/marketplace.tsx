@@ -68,6 +68,32 @@ export default function Marketplace() {
   });
 
   const handleAddToCart = (product: any) => {
+    // Add to localStorage cart
+    const existingCart = JSON.parse(localStorage.getItem('vendorlink_cart') || '[]');
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      supplier: product.supplier?.businessName || "Unknown Supplier",
+      price: product.pricePerUnit,
+      unit: product.unit,
+      quantity: product.minimumOrderQuantity || 1,
+      minOrder: product.minimumOrderQuantity || 1,
+      available: product.availableQuantity
+    };
+    
+    // Check if item already exists in cart
+    const existingItemIndex = existingCart.findIndex((item: any) => item.id === product.id);
+    if (existingItemIndex >= 0) {
+      existingCart[existingItemIndex].quantity += cartItem.quantity;
+    } else {
+      existingCart.push(cartItem);
+    }
+    
+    localStorage.setItem('vendorlink_cart', JSON.stringify(existingCart));
+    
+    // Trigger custom event to update cart count in navigation
+    window.dispatchEvent(new Event('cartUpdated'));
+    
     // Show immediate feedback for cart addition
     toast({
       title: "Added to Cart",

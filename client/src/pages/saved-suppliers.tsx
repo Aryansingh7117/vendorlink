@@ -175,7 +175,8 @@ export default function SavedSuppliers() {
                           title: "Viewing Products",
                           description: `Opening ${supplier.businessName}'s product catalog`,
                         });
-                        setTimeout(() => window.location.href = "/marketplace", 1000);
+                        // Redirect to a supplier-specific product page
+                        setTimeout(() => window.location.href = `/supplier-catalog/${supplier.id}`, 1000);
                       }}>
                         View Products
                       </Button>

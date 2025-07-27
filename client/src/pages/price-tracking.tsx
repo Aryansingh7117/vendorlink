@@ -4,12 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Bell, TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function PriceTracking() {
   const { toast } = useToast();
-  const priceAlerts = [
+  const [alerts, setAlerts] = useState([
     {
       id: "1",
       productName: "Basmati Rice Premium",
@@ -40,7 +44,7 @@ export default function PriceTracking() {
       changePercent: 0,
       status: "active"
     }
-  ];
+  ]);
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
@@ -73,20 +77,65 @@ export default function PriceTracking() {
                     Monitor price changes and get alerts when your target prices are reached
                   </p>
                 </div>
-                <Button onClick={() => {
-                  toast({
-                    title: "Create Price Alert",
-                    description: "Opening price alert creation form...",
-                  });
-                }}>
-                  <Target className="h-4 w-4 mr-2" />
-                  Create Alert
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Target className="h-4 w-4 mr-2" />
+                      Create Alert
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create Price Alert</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="product">Product Name</Label>
+                        <Input id="product" placeholder="e.g., Premium Basmati Rice" />
+                      </div>
+                      <div>
+                        <Label htmlFor="target-price">Target Price (₹)</Label>
+                        <Input id="target-price" type="number" placeholder="e.g., 80" />
+                      </div>
+                      <div>
+                        <Label htmlFor="condition">Alert Condition</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select condition" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="below">Notify when price drops below target</SelectItem>
+                            <SelectItem value="above">Notify when price goes above target</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button className="w-full" onClick={() => {
+                        const newAlert = {
+                          id: Date.now().toString(),
+                          productName: "New Product Alert",
+                          currentPrice: 100,
+                          targetPrice: 90,
+                          supplier: "Various Suppliers",
+                          trend: "stable" as const,
+                          changePercent: 0,
+                          status: "active" as const
+                        };
+                        setAlerts([...alerts, newAlert]);
+                        toast({
+                          title: "Price Alert Created",
+                          description: "You'll be notified when the price condition is met",
+                        });
+                      }}>
+                        Create Alert
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
 
             <div className="grid gap-6">
-              {priceAlerts.map((alert) => (
+              {alerts.map((alert) => (
                 <Card key={alert.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -127,24 +176,42 @@ export default function PriceTracking() {
 
                       <div className="flex items-end">
                         <div className="flex gap-2 w-full">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="flex-1"
-                            onClick={() => {
-                              toast({
-                                title: "Edit Price Alert",
-                                description: `Editing alert for ${alert.productName}. Target price: ₹${alert.targetPrice}`,
-                              });
-                            }}
-                          >
-                            <Bell className="h-4 w-4 mr-1" />
-                            Edit Alert
-                          </Button>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" size="sm" className="flex-1">
+                                <Bell className="h-4 w-4 mr-1" />
+                                Edit Alert
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Edit Price Alert</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div>
+                                  <Label>Product Name</Label>
+                                  <Input defaultValue={alert.productName} />
+                                </div>
+                                <div>
+                                  <Label>Target Price (₹)</Label>
+                                  <Input type="number" defaultValue={alert.targetPrice} />
+                                </div>
+                                <Button className="w-full" onClick={() => {
+                                  toast({
+                                    title: "Alert Updated",
+                                    description: `Price alert for ${alert.productName} has been updated`,
+                                  });
+                                }}>
+                                  Update Alert
+                                </Button>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                           <Button 
                             variant="ghost" 
                             size="sm"
                             onClick={() => {
+                              setAlerts(alerts.filter(a => a.id !== alert.id));
                               toast({
                                 title: "Alert Removed",
                                 description: `Price alert for ${alert.productName} has been removed`,

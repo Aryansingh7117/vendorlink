@@ -18,6 +18,7 @@ import CreditScore from "@/pages/credit-score";
 import Settings from "@/pages/settings";
 import Cart from "@/pages/cart";
 import SupplierProducts from "@/pages/supplier-products";
+import VendorProducts from "@/pages/vendor-products";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -41,6 +42,7 @@ function Router() {
           <Route path="/settings" component={Settings} />
           <Route path="/cart" component={Cart} />
           <Route path="/supplier-products" component={SupplierProducts} />
+          <Route path="/vendor-products" component={VendorProducts} />
         </>
       )}
       <Route component={NotFound} />
