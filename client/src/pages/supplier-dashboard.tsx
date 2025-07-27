@@ -149,22 +149,13 @@ export default function SupplierDashboard() {
                   </p>
                 </div>
                 <div className="mt-4 lg:mt-0">
-                  <Dialog open={showAddProduct} onOpenChange={setShowAddProduct}>
-                    <DialogTrigger asChild>
-                      <Button data-testid="button-add-product">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Product
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="dark:bg-gray-800 dark:border-gray-700">
-                      <DialogHeader>
-                        <DialogTitle className="dark:text-white">Add New Product</DialogTitle>
-                      </DialogHeader>
-                      <div className="text-center py-8 text-slate-500 dark:text-gray-400">
-                        Product creation form would go here
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                  <Button 
+                    data-testid="button-add-product"
+                    onClick={() => window.location.href = "/supplier-products"}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Product
+                  </Button>
                 </div>
               </div>
             </div>
@@ -269,7 +260,7 @@ export default function SupplierDashboard() {
                       <Button 
                         variant="outline" 
                         className="mt-4"
-                        onClick={() => setShowAddProduct(true)}
+                        onClick={() => window.location.href = "/supplier-products"}
                         data-testid="button-add-first-product"
                       >
                         Add Your First Product
@@ -306,14 +297,24 @@ export default function SupplierDashboard() {
                             }`} data-testid={`text-inventory-product-stock-${product.id}`}>
                               {product.availableQuantity} {product.unit}
                             </p>
-                            <Button variant="ghost" size="sm" data-testid={`button-update-stock-${product.id}`}>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              data-testid={`button-update-stock-${product.id}`}
+                              onClick={() => window.location.href = "/supplier-products"}
+                            >
                               Update Stock
                             </Button>
                           </div>
                         </div>
                       ))}
                       {myProducts.length > 5 && (
-                        <Button variant="outline" className="w-full" data-testid="button-view-all-products">
+                        <Button 
+                          variant="outline" 
+                          className="w-full" 
+                          data-testid="button-view-all-products"
+                          onClick={() => window.location.href = "/supplier-products"}
+                        >
                           View All Products ({myProducts.length})
                         </Button>
                       )}

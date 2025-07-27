@@ -31,6 +31,9 @@ interface Product {
 export default function SupplierProducts() {
   const { toast } = useToast();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showViewDialog, setShowViewDialog] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [products, setProducts] = useState<Product[]>([
     {
       id: "1",
@@ -71,6 +74,18 @@ export default function SupplierProducts() {
   ]);
 
   const addForm = useForm({
+    defaultValues: {
+      name: "",
+      description: "",
+      category: "",
+      price: "",
+      unit: "kg",
+      stock: "",
+      minOrder: "",
+    }
+  });
+
+  const editForm = useForm({
     defaultValues: {
       name: "",
       description: "",
@@ -333,19 +348,24 @@ export default function SupplierProducts() {
 
                     <div className="flex gap-3">
                       <Button size="sm" onClick={() => {
-                        toast({
-                          title: "Edit Product",
-                          description: `Opening editor for ${product.name}`,
+                        setSelectedProduct(product);
+                        editForm.reset({
+                          name: product.name,
+                          description: product.description,
+                          category: product.category,
+                          price: product.price.toString(),
+                          unit: product.unit,
+                          stock: product.stock.toString(),
+                          minOrder: product.minOrder.toString(),
                         });
+                        setShowEditDialog(true);
                       }}>
                         <Edit className="h-4 w-4 mr-1" />
                         Edit
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => {
-                        toast({
-                          title: "Product Details",
-                          description: `Viewing detailed information for ${product.name}`,
-                        });
+                        setSelectedProduct(product);
+                        setShowViewDialog(true);
                       }}>
                         <Eye className="h-4 w-4 mr-1" />
                         View Details
@@ -373,6 +393,212 @@ export default function SupplierProducts() {
                 </Card>
               ))}
             </div>
+
+            {/* View Product Dialog */}
+            <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
+              <DialogContent className="max-w-2xl dark:bg-gray-800 dark:border-gray-700">
+                <DialogHeader>
+                  <DialogTitle className="dark:text-white">Product Details</DialogTitle>
+                </DialogHeader>
+                {selectedProduct && (
+                  <div className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600 dark:text-gray-300">Product Name</Label>
+                        <p className="text-slate-900 dark:text-white font-medium">{selectedProduct.name}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600 dark:text-gray-300">Category</Label>
+                        <p className="text-slate-900 dark:text-white">{selectedProduct.category}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600 dark:text-gray-300">Price per {selectedProduct.unit}</Label>
+                        <p className="text-slate-900 dark:text-white font-medium">₹{selectedProduct.price}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600 dark:text-gray-300">Stock Available</Label>
+                        <p className="text-slate-900 dark:text-white">{selectedProduct.stock} {selectedProduct.unit}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600 dark:text-gray-300">Minimum Order</Label>
+                        <p className="text-slate-900 dark:text-white">{selectedProduct.minOrder} {selectedProduct.unit}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600 dark:text-gray-300">Total Orders</Label>
+                        <p className="text-slate-900 dark:text-white">{selectedProduct.orders}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-slate-600 dark:text-gray-300">Description</Label>
+                      <p className="text-slate-900 dark:text-white mt-1">{selectedProduct.description}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-slate-600 dark:text-gray-300">Status</Label>
+                      <div className="mt-1">{getStatusBadge(selectedProduct.status, selectedProduct.stock)}</div>
+                    </div>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+
+            {/* Edit Product Dialog */}
+            <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+              <DialogContent className="max-w-2xl dark:bg-gray-800 dark:border-gray-700">
+                <DialogHeader>
+                  <DialogTitle className="dark:text-white">Edit Product</DialogTitle>
+                </DialogHeader>
+                <Form {...editForm}>
+                  <form onSubmit={editForm.handleSubmit((data) => {
+                    if (selectedProduct) {
+                      const updatedProduct = {
+                        ...selectedProduct,
+                        name: data.name,
+                        description: data.description,
+                        category: data.category,
+                        price: parseFloat(data.price),
+                        unit: data.unit,
+                        stock: parseInt(data.stock),
+                        minOrder: parseInt(data.minOrder),
+                        status: parseInt(data.stock) > 0 ? "active" : "out_of_stock" as Product['status']
+                      };
+                      
+                      setProducts(products.map(p => p.id === selectedProduct.id ? updatedProduct : p));
+                      setShowEditDialog(false);
+                      
+                      toast({
+                        title: "Product Updated!",
+                        description: `${data.name} has been updated successfully`,
+                      });
+                    }
+                  })} className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <FormField
+                        control={editForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Product Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., Premium Basmati Rice" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={editForm.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="Grains & Cereals">Grains & Cereals</SelectItem>
+                                <SelectItem value="Oils & Fats">Oils & Fats</SelectItem>
+                                <SelectItem value="Vegetables">Vegetables</SelectItem>
+                                <SelectItem value="Fruits">Fruits</SelectItem>
+                                <SelectItem value="Spices & Herbs">Spices & Herbs</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={editForm.control}
+                        name="price"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Price per unit (₹)</FormLabel>
+                            <FormControl>
+                              <Input type="number" placeholder="85" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={editForm.control}
+                        name="unit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Unit</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="kg">Kilogram (kg)</SelectItem>
+                                <SelectItem value="L">Liter (L)</SelectItem>
+                                <SelectItem value="g">Gram (g)</SelectItem>
+                                <SelectItem value="piece">Piece</SelectItem>
+                                <SelectItem value="dozen">Dozen</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={editForm.control}
+                        name="stock"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Stock</FormLabel>
+                            <FormControl>
+                              <Input type="number" placeholder="500" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={editForm.control}
+                        name="minOrder"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Min Order</FormLabel>
+                            <FormControl>
+                              <Input type="number" placeholder="10" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={editForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="High-quality aromatic basmati rice..."
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex gap-3 pt-4">
+                      <Button type="submit" className="flex-1">Update Product</Button>
+                      <Button type="button" variant="outline" onClick={() => setShowEditDialog(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
           </div>
         </main>
       </div>
